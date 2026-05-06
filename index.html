@@ -2907,7 +2907,7 @@
 
         <div class="pending-panel hidden" id="pendingPanel">
           <h4>Cuenta pendiente de aprobación</h4>
-          <p>Tu cuenta fue creada correctamente. El usuario principal debe aprobar tu acceso antes de que puedas entrar al sistema.</p>
+          <p>Tu cuenta fue creada correctamente. Tu usuario ya fue creado en Firebase Authentication. El usuario principal debe aprobar tu acceso antes de que puedas entrar al sistema.</p>
           <button class="btn-red" type="button" id="btnLogoutPending">Salir</button>
         </div>
 
@@ -3161,9 +3161,12 @@
         <div class="config-head">
           <div>
             <h2>Solicitudes de usuarios</h2>
-            <p>Aprueba o bloquea usuarios nuevos antes de que puedan ingresar al sistema.</p>
+            <p>Aprueba o bloquea usuarios nuevos. Al registrarse ya quedan creados en Firebase Authentication, pero solo podrán ingresar cuando el usuario principal los apruebe.</p>
           </div>
           <button class="btn-blue" id="btnRefreshUsers" type="button">Actualizar solicitudes</button>
+        </div>
+        <div class="report-note" style="margin-bottom: 14px;">
+          Usuario principal configurado: <strong>mikel@local.io</strong>. Los usuarios pendientes se controlan desde Firestore y también existen en Firebase Authentication desde el momento del registro.
         </div>
         <div class="admin-users-list" id="pendingUsersList">
           <div class="candidate-empty">No hay solicitudes cargadas.</div>
@@ -3389,7 +3392,7 @@
     const STORAGE_KEY = 'constructor_red_4life_v3_jean_carlo_resumen';
     const USERS_COLLECTION = 'usuarios_4life';
     const USER_NETWORK_DOC_ID = 'red_principal';
-    const ADMIN_EMAILS = ['admin@avancelinea.com']; // Cambia este correo por el correo del usuario principal.
+    const ADMIN_EMAILS = ['mikel@local.io']; // Usuario principal/admin del sistema.
     const CLOUD_DEBOUNCE_MS = 1200;
     let cloudSaveTimer = null;
     let isLoadingFromCloud = false;
@@ -3723,6 +3726,7 @@
               <h4>${escapeHtml(user.name || 'Usuario sin nombre')}</h4>
               <small>${escapeHtml(user.email || '')}</small>
               <small>UID: ${escapeHtml(user.uid || docSnap.id)}</small>
+              <small>Estado en sistema: pendiente · Usuario creado en Firebase Authentication</small>
             </div>
             <div class="admin-user-actions">
               <button class="btn-green approve-user" type="button" data-uid="${docSnap.id}">Aprobar</button>
@@ -3755,6 +3759,11 @@
         approvedAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       });
+
+      alert(status === 'approved'
+        ? 'Usuario aprobado. Ahora podrá ingresar con su correo y contraseña.'
+        : 'Usuario bloqueado. No podrá ingresar al sistema.'
+      );
 
       await loadPendingUsers();
     }
@@ -3842,7 +3851,7 @@
 
       updateAuthMessage(admin
         ? 'Cuenta principal creada correctamente. Cargando tu espacio...'
-        : 'Cuenta creada. Queda pendiente hasta que el usuario principal apruebe el acceso.',
+        : 'Cuenta creada en Firebase Authentication. Queda pendiente hasta que el usuario principal apruebe el acceso.',
         'ok'
       );
 
