@@ -2686,6 +2686,62 @@
       margin-bottom: 16px;
     }
 
+    .admin-search-box {
+      margin: 0 0 14px;
+      background: #f8fbff;
+      border: 1px solid rgba(6,47,104,.10);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .admin-search-box label {
+      display: block;
+      margin-bottom: 7px;
+      color: #344054;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .admin-search-box input {
+      width: 100%;
+      border: 1px solid rgba(6,47,104,.14);
+      border-radius: 14px;
+      padding: 12px 13px;
+      background: #ffffff;
+      color: #031f49;
+      font-size: 14px;
+      font-weight: 750;
+      outline: none;
+    }
+
+    .admin-search-box input:focus {
+      border-color: rgba(249,131,1,.55);
+      box-shadow: 0 0 0 4px rgba(249,131,1,.10);
+    }
+
+    .admin-search-box small {
+      display: block;
+      margin-top: 7px;
+      color: #667085;
+      font-size: 12px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .admin-users-summary {
+      margin: 0 0 12px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: #fff8ef;
+      border: 1px solid rgba(249,131,1,.20);
+      color: #704300;
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 850;
+    }
+
     .admin-users-list {
       display: flex;
       flex-direction: column;
@@ -2701,6 +2757,40 @@
       border: 1px solid rgba(6,47,104,.10);
       border-radius: 16px;
       padding: 12px;
+    }
+
+    .admin-status-badge {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      margin-top: 8px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 950;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      background: #edf3fb;
+      color: #365d93;
+      border: 1px solid rgba(6,47,104,.12);
+    }
+
+    .admin-status-badge.approved {
+      background: var(--verde-suave);
+      color: #0f653e;
+      border-color: var(--verde-borde);
+    }
+
+    .admin-status-badge.pending {
+      background: #fff8ef;
+      color: #9a4d00;
+      border-color: rgba(249,131,1,.24);
+    }
+
+    .admin-status-badge.blocked {
+      background: #fff3f3;
+      color: #7b1e1e;
+      border-color: rgba(217,61,61,.25);
     }
 
     .admin-user-row h4 {
@@ -3160,16 +3250,27 @@
       <div class="admin-approval-section hidden" id="adminApprovalSection">
         <div class="config-head">
           <div>
-            <h2>Solicitudes de usuarios</h2>
-            <p>Aprueba o bloquea usuarios nuevos. Al registrarse ya quedan creados en Firebase Authentication, pero solo podrán ingresar cuando el usuario principal los apruebe.</p>
+            <h2>Usuarios del sistema</h2>
+            <p>Busca las personas que han creado cuenta, revisa su estado y aprueba o bloquea el acceso al sistema.</p>
           </div>
-          <button class="btn-blue" id="btnRefreshUsers" type="button">Actualizar solicitudes</button>
+          <button class="btn-blue" id="btnRefreshUsers" type="button">Actualizar usuarios</button>
         </div>
         <div class="report-note" style="margin-bottom: 14px;">
-          Usuario principal configurado: <strong>mikel@local.io</strong>. Los usuarios pendientes se controlan desde Firestore y también existen en Firebase Authentication desde el momento del registro.
+          Usuario principal configurado: <strong>mikel@local.io</strong>. Los usuarios se crean primero en Firebase Authentication y aquí se administran por estado en Firestore.
         </div>
+
+        <div class="admin-search-box">
+          <label for="adminUserSearch">Buscar usuario</label>
+          <input id="adminUserSearch" type="search" placeholder="Buscar por nombre, correo, UID o estado..." autocomplete="off" />
+          <small>Ejemplo: pendiente, aprobado, bloqueado, correo o nombre.</small>
+        </div>
+
+        <div class="admin-users-summary" id="adminUsersSummary">
+          Cargando usuarios...
+        </div>
+
         <div class="admin-users-list" id="pendingUsersList">
-          <div class="candidate-empty">No hay solicitudes cargadas.</div>
+          <div class="candidate-empty">No hay usuarios cargados.</div>
         </div>
       </div>
 
@@ -3439,6 +3540,9 @@
     const pendingPanel = document.getElementById('pendingPanel');
     const adminApprovalSection = document.getElementById('adminApprovalSection');
     const pendingUsersList = document.getElementById('pendingUsersList');
+    const adminUserSearch = document.getElementById('adminUserSearch');
+    const adminUsersSummary = document.getElementById('adminUsersSummary');
+    let adminUsersCache = [];
     const personModal = document.getElementById('personModal');
     const summaryModal = document.getElementById('summaryModal');
     const reportModal = document.getElementById('reportModal');
@@ -3720,35 +3824,62 @@
       updateAuthMessage('Tu cuenta está pendiente. Cuando el usuario principal la apruebe, podrás ingresar.', 'ok');
     }
 
-    async function loadPendingUsers() {
-      if (!currentUser) return;
-      const profile = await getUserProfile(currentUser);
-      if (!profile || profile.role !== 'admin' || profile.status !== 'approved') return;
+    function getReadableUserStatus(status = '') {
+      const normalized = String(status || 'pending').toLowerCase();
+      if (normalized === 'approved') return 'aprobado';
+      if (normalized === 'blocked') return 'bloqueado';
+      return 'pendiente';
+    }
 
-      adminApprovalSection?.classList.remove('hidden');
-      pendingUsersList.innerHTML = '<div class="candidate-empty">Cargando solicitudes...</div>';
+    function renderAdminUsersList() {
+      if (!pendingUsersList) return;
+      const term = normalizeSearch(adminUserSearch?.value || '');
 
-      const q = query(collection(db, USERS_COLLECTION), where('status', '==', 'pending'));
-      const snapshot = await getDocs(q);
+      const filtered = adminUsersCache.filter(user => {
+        const haystack = normalizeSearch([
+          user.name,
+          user.email,
+          user.uid,
+          user.role,
+          user.status,
+          getReadableUserStatus(user.status)
+        ].join(' '));
+        return !term || haystack.includes(term);
+      });
 
-      if (snapshot.empty) {
-        pendingUsersList.innerHTML = '<div class="candidate-empty">No hay usuarios pendientes por aprobar.</div>';
+      const total = adminUsersCache.length;
+      const pending = adminUsersCache.filter(user => user.status === 'pending').length;
+      const approved = adminUsersCache.filter(user => user.status === 'approved').length;
+      const blocked = adminUsersCache.filter(user => user.status === 'blocked').length;
+
+      if (adminUsersSummary) {
+        adminUsersSummary.textContent = `Total usuarios: ${total} · Pendientes: ${pending} · Aprobados: ${approved} · Bloqueados: ${blocked} · Mostrando: ${filtered.length}`;
+      }
+
+      if (!filtered.length) {
+        pendingUsersList.innerHTML = '<div class="candidate-empty">No se encontraron usuarios con esa búsqueda.</div>';
         return;
       }
 
-      pendingUsersList.innerHTML = snapshot.docs.map(docSnap => {
-        const user = docSnap.data();
+      pendingUsersList.innerHTML = filtered.map(user => {
+        const status = user.status || 'pending';
+        const role = user.role || 'user';
+        const isCurrentAdmin = user.uid === currentUser?.uid;
+        const canApprove = status !== 'approved' && !isCurrentAdmin;
+        const canBlock = status !== 'blocked' && !isCurrentAdmin;
+
         return `
           <div class="admin-user-row">
             <div>
               <h4>${escapeHtml(user.name || 'Usuario sin nombre')}</h4>
               <small>${escapeHtml(user.email || '')}</small>
-              <small>UID: ${escapeHtml(user.uid || docSnap.id)}</small>
-              <small>Estado en sistema: pendiente · Usuario creado en Firebase Authentication</small>
+              <small>UID: ${escapeHtml(user.uid || '')}</small>
+              <small>Rol: ${escapeHtml(role)} · Creado en Firebase Authentication</small>
+              <span class="admin-status-badge ${escapeHtml(status)}">${getReadableUserStatus(status)}</span>
             </div>
             <div class="admin-user-actions">
-              <button class="btn-green approve-user" type="button" data-uid="${docSnap.id}">Aprobar</button>
-              <button class="btn-red reject-user" type="button" data-uid="${docSnap.id}">Bloquear</button>
+              ${canApprove ? `<button class="btn-green approve-user" type="button" data-uid="${escapeHtml(user.uid)}">Aprobar</button>` : ''}
+              ${canBlock ? `<button class="btn-red reject-user" type="button" data-uid="${escapeHtml(user.uid)}">Bloquear</button>` : ''}
             </div>
           </div>
         `;
@@ -3761,6 +3892,43 @@
       pendingUsersList.querySelectorAll('.reject-user').forEach(button => {
         button.addEventListener('click', () => updateUserApproval(button.dataset.uid, 'blocked'));
       });
+    }
+
+    async function loadPendingUsers() {
+      if (!currentUser) return;
+      const profile = await getUserProfile(currentUser);
+      if (!profile || profile.role !== 'admin' || profile.status !== 'approved') return;
+
+      adminApprovalSection?.classList.remove('hidden');
+      if (pendingUsersList) pendingUsersList.innerHTML = '<div class="candidate-empty">Cargando usuarios del sistema...</div>';
+      if (adminUsersSummary) adminUsersSummary.textContent = 'Cargando usuarios...';
+
+      try {
+        const snapshot = await getDocs(collection(db, USERS_COLLECTION));
+        adminUsersCache = snapshot.docs.map(docSnap => {
+          const user = docSnap.data() || {};
+          return {
+            uid: user.uid || docSnap.id,
+            name: user.name || 'Usuario sin nombre',
+            email: user.email || '',
+            role: user.role || 'user',
+            status: user.status || 'pending',
+            createdAt: user.createdAt || '',
+            updatedAt: user.updatedAt || ''
+          };
+        }).sort((a, b) => {
+          const statusOrder = { pending: 0, approved: 1, blocked: 2 };
+          const byStatus = (statusOrder[a.status] ?? 9) - (statusOrder[b.status] ?? 9);
+          if (byStatus !== 0) return byStatus;
+          return String(a.email).localeCompare(String(b.email));
+        });
+
+        renderAdminUsersList();
+      } catch (error) {
+        console.error('No se pudieron cargar los usuarios:', error);
+        if (pendingUsersList) pendingUsersList.innerHTML = '<div class="candidate-empty">No se pudieron cargar los usuarios. Revisa las reglas de Firestore.</div>';
+        if (adminUsersSummary) adminUsersSummary.textContent = 'Error cargando usuarios.';
+      }
     }
 
     async function updateUserApproval(uid, status) {
@@ -5868,6 +6036,7 @@
     document.getElementById('btnLogoutConfig')?.addEventListener('click', handleLogout);
     document.getElementById('btnLogoutPending')?.addEventListener('click', handleLogout);
     document.getElementById('btnRefreshUsers')?.addEventListener('click', loadPendingUsers);
+    adminUserSearch?.addEventListener('input', renderAdminUsersList);
 
     document.getElementById('btnSaveCloud')?.addEventListener('click', () => saveToFirebase(true));
     document.getElementById('btnLoadCloud')?.addEventListener('click', () => loadFromFirebase(true));
