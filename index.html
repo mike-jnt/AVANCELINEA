@@ -2645,6 +2645,86 @@
       padding-bottom: 24px;
     }
 
+
+    button:disabled {
+      opacity: .58;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+
+    .pending-panel {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 18px;
+      background: #fff8ef;
+      border: 1px solid rgba(249,131,1,.24);
+      color: #6b3d05;
+    }
+
+    .pending-panel h4 {
+      margin: 0;
+      color: #6b3d05;
+      font-size: 17px;
+    }
+
+    .pending-panel p {
+      margin: 8px 0 12px;
+      color: #714a16;
+      line-height: 1.45;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .admin-approval-section {
+      background: rgba(255,255,255,.95);
+      border: 1px solid var(--borde);
+      border-radius: 22px;
+      box-shadow: var(--sombra);
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .admin-users-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .admin-user-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      background: #f8fbff;
+      border: 1px solid rgba(6,47,104,.10);
+      border-radius: 16px;
+      padding: 12px;
+    }
+
+    .admin-user-row h4 {
+      margin: 0;
+      color: #031f49;
+      font-size: 15px;
+      font-weight: 950;
+    }
+
+    .admin-user-row small {
+      display: block;
+      margin-top: 4px;
+      color: #667085;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .admin-user-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
     .hidden { display: none !important; }
     input[type="file"] { display: none; }
 
@@ -2718,6 +2798,8 @@
       .auth-brand-panel h2 { font-size: 38px; }
       .auth-card { grid-template-columns: 1fr; }
       .auth-actions { grid-template-columns: 1fr; }
+      .admin-user-row { grid-template-columns: 1fr; }
+      .admin-user-actions { justify-content: stretch; }
       button, .file-label { width: 100%; }
       .zoom-toolbar.zoom-vertical button { width: 46px; min-width: 46px; }
       .canvas { padding: 24px 8px 44px; }
@@ -2793,7 +2875,7 @@
         <form id="registerForm" class="auth-panel">
           <div class="auth-form-head">
             <h3>Crear cuenta</h3>
-            <p>Registra tus datos. Después enviaremos un correo de verificación para activar el acceso.</p>
+            <p>Registra tus datos para crear tu espacio privado.</p>
           </div>
 
           <div class="auth-field">
@@ -2822,6 +2904,12 @@
         </form>
 
         <div class="auth-message" id="authMessage">Ingresa con tu cuenta o crea una nueva desde el formulario de registro.</div>
+
+        <div class="pending-panel hidden" id="pendingPanel">
+          <h4>Cuenta pendiente de aprobación</h4>
+          <p>Tu cuenta fue creada correctamente. El usuario principal debe aprobar tu acceso antes de que puedas entrar al sistema.</p>
+          <button class="btn-red" type="button" id="btnLogoutPending">Salir</button>
+        </div>
 
         <div class="verify-panel hidden" id="verifyPanel">
           <div>
@@ -3069,6 +3157,19 @@
         </div>
       </div>
 
+      <div class="admin-approval-section hidden" id="adminApprovalSection">
+        <div class="config-head">
+          <div>
+            <h2>Solicitudes de usuarios</h2>
+            <p>Aprueba o bloquea usuarios nuevos antes de que puedan ingresar al sistema.</p>
+          </div>
+          <button class="btn-blue" id="btnRefreshUsers" type="button">Actualizar solicitudes</button>
+        </div>
+        <div class="admin-users-list" id="pendingUsersList">
+          <div class="candidate-empty">No hay solicitudes cargadas.</div>
+        </div>
+      </div>
+
       <div class="config-actions">
         <button class="btn-green" id="btnSaveCloud" type="button">Guardar en Firebase</button>
         <button class="btn-blue" id="btnLoadCloud" type="button">Cargar desde Firebase</button>
@@ -3251,8 +3352,12 @@
       doc,
       getDoc,
       setDoc,
-      serverTimestamp,
-      enableIndexedDbPersistence
+      updateDoc,
+      collection,
+      query,
+      where,
+      getDocs,
+      serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
     import {
       getAuth,
@@ -3260,9 +3365,7 @@
       createUserWithEmailAndPassword,
       signInWithEmailAndPassword,
       signOut,
-      updateProfile,
-      sendEmailVerification,
-      reload
+      updateProfile
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
     const firebaseConfig = {
@@ -3283,11 +3386,10 @@
       if (supported) getAnalytics(firebaseApp);
     }).catch(() => {});
 
-    enableIndexedDbPersistence(db).catch(() => {});
-
     const STORAGE_KEY = 'constructor_red_4life_v3_jean_carlo_resumen';
     const USERS_COLLECTION = 'usuarios_4life';
     const USER_NETWORK_DOC_ID = 'red_principal';
+    const ADMIN_EMAILS = ['admin@avancelinea.com']; // Cambia este correo por el correo del usuario principal.
     const CLOUD_DEBOUNCE_MS = 1200;
     let cloudSaveTimer = null;
     let isLoadingFromCloud = false;
@@ -3331,7 +3433,9 @@
     const authMessage = document.getElementById('authMessage');
     const authUserChip = document.getElementById('authUserChip');
     const userInfoText = document.getElementById('userInfoText');
-    const verifyPanel = document.getElementById('verifyPanel');
+    const pendingPanel = document.getElementById('pendingPanel');
+    const adminApprovalSection = document.getElementById('adminApprovalSection');
+    const pendingUsersList = document.getElementById('pendingUsersList');
     const personModal = document.getElementById('personModal');
     const summaryModal = document.getElementById('summaryModal');
     const reportModal = document.getElementById('reportModal');
@@ -3513,43 +3617,187 @@
       document.querySelector('.auth-form-pro')?.classList.remove('verification-required');
       updateAuthMessage(loginActive
         ? 'Ingresa con tu cuenta registrada.'
-        : 'Crea tu cuenta y luego verifica tu correo para activar el acceso.'
+        : 'Crea tu cuenta y luego inicia sesión para activar el acceso.'
       );
     }
 
-    function setAuthUI(user) {
-      currentUser = user || null;
-      const verified = Boolean(currentUser?.emailVerified);
+    function getAuthErrorMessage(error) {
+      const code = error?.code || '';
 
-      if (currentUser && verified) {
+      if (code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
+        return 'Correo o contraseña incorrectos.';
+      }
+
+      if (code === 'auth/email-already-in-use') {
+        return 'Este correo ya tiene una cuenta creada. Intenta iniciar sesión.';
+      }
+
+      if (code === 'auth/weak-password') {
+        return 'La contraseña debe tener mínimo 6 caracteres.';
+      }
+
+      if (code === 'auth/invalid-email') {
+        return 'El correo no tiene un formato válido.';
+      }
+
+      if (code === 'auth/too-many-requests') {
+        return 'Firebase bloqueó temporalmente los intentos. Espera unos minutos y vuelve a probar.';
+      }
+
+      return 'Ocurrió un error con Firebase Auth. Revisa la configuración o intenta de nuevo.';
+    }
+
+    function getUserProfileRef(uid) {
+      return doc(db, USERS_COLLECTION, uid);
+    }
+
+    function isMainAdminEmail(email = '') {
+      return ADMIN_EMAILS.map(item => item.toLowerCase()).includes(String(email || '').toLowerCase());
+    }
+
+    async function getUserProfile(user) {
+      if (!user) return null;
+      const snapshot = await getDoc(getUserProfileRef(user.uid));
+      return snapshot.exists() ? snapshot.data() : null;
+    }
+
+    async function ensureUserProfile(user, extra = {}) {
+      if (!user) return null;
+      const profileRef = getUserProfileRef(user.uid);
+      const snapshot = await getDoc(profileRef);
+      const admin = isMainAdminEmail(user.email);
+      const existing = snapshot.exists() ? snapshot.data() : {};
+      const status = admin ? 'approved' : (existing.status || extra.status || 'pending');
+      const role = admin ? 'admin' : (existing.role || extra.role || 'user');
+
+      const profile = {
+        uid: user.uid,
+        name: user.displayName || extra.name || existing.name || user.email?.split('@')[0] || 'Usuario',
+        email: user.email || existing.email || '',
+        role,
+        status,
+        createdAt: existing.createdAt || extra.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      await setDoc(profileRef, profile, { merge: true });
+      return profile;
+    }
+
+    function setPendingAccessUI(user, profile) {
+      document.body.classList.add('auth-screen');
+      appShell?.classList.add('locked');
+      authGate?.classList.add('active');
+      document.querySelector('.auth-form-pro')?.classList.add('verification-required');
+      authForm?.classList.remove('active');
+      registerForm?.classList.remove('active');
+      pendingPanel?.classList.remove('hidden');
+
+      if (authUserChip) authUserChip.textContent = 'Pendiente';
+      if (userInfoText) userInfoText.textContent = `Cuenta pendiente de aprobación: ${profile?.email || user.email}`;
+      updateCloudStatus('Tu cuenta está pendiente de aprobación por el usuario principal.', 'info');
+      updateAuthMessage('Tu cuenta está pendiente. Cuando el usuario principal la apruebe, podrás ingresar.', 'ok');
+    }
+
+    async function loadPendingUsers() {
+      if (!currentUser) return;
+      const profile = await getUserProfile(currentUser);
+      if (!profile || profile.role !== 'admin' || profile.status !== 'approved') return;
+
+      adminApprovalSection?.classList.remove('hidden');
+      pendingUsersList.innerHTML = '<div class="candidate-empty">Cargando solicitudes...</div>';
+
+      const q = query(collection(db, USERS_COLLECTION), where('status', '==', 'pending'));
+      const snapshot = await getDocs(q);
+
+      if (snapshot.empty) {
+        pendingUsersList.innerHTML = '<div class="candidate-empty">No hay usuarios pendientes por aprobar.</div>';
+        return;
+      }
+
+      pendingUsersList.innerHTML = snapshot.docs.map(docSnap => {
+        const user = docSnap.data();
+        return `
+          <div class="admin-user-row">
+            <div>
+              <h4>${escapeHtml(user.name || 'Usuario sin nombre')}</h4>
+              <small>${escapeHtml(user.email || '')}</small>
+              <small>UID: ${escapeHtml(user.uid || docSnap.id)}</small>
+            </div>
+            <div class="admin-user-actions">
+              <button class="btn-green approve-user" type="button" data-uid="${docSnap.id}">Aprobar</button>
+              <button class="btn-red reject-user" type="button" data-uid="${docSnap.id}">Bloquear</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      pendingUsersList.querySelectorAll('.approve-user').forEach(button => {
+        button.addEventListener('click', () => updateUserApproval(button.dataset.uid, 'approved'));
+      });
+
+      pendingUsersList.querySelectorAll('.reject-user').forEach(button => {
+        button.addEventListener('click', () => updateUserApproval(button.dataset.uid, 'blocked'));
+      });
+    }
+
+    async function updateUserApproval(uid, status) {
+      if (!currentUser) return;
+      const adminProfile = await getUserProfile(currentUser);
+      if (!adminProfile || adminProfile.role !== 'admin' || adminProfile.status !== 'approved') {
+        alert('No tienes permisos de administrador para aprobar usuarios.');
+        return;
+      }
+
+      await updateDoc(getUserProfileRef(uid), {
+        status,
+        approvedBy: currentUser.uid,
+        approvedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+
+      await loadPendingUsers();
+    }
+
+    async function setAuthUI(user) {
+      currentUser = user || null;
+      adminApprovalSection?.classList.add('hidden');
+
+      if (currentUser) {
+        const profile = await ensureUserProfile(currentUser);
+
+        if (profile.status === 'blocked') {
+          setPendingAccessUI(currentUser, profile);
+          updateAuthMessage('Tu cuenta fue bloqueada por el usuario principal.', 'error');
+          return;
+        }
+
+        if (profile.status !== 'approved') {
+          setPendingAccessUI(currentUser, profile);
+          return;
+        }
+
         document.body.classList.remove('auth-screen');
         authGate?.classList.remove('active');
         appShell?.classList.remove('locked');
         document.querySelector('.auth-form-pro')?.classList.remove('verification-required');
-        verifyPanel?.classList.add('hidden');
+        pendingPanel?.classList.add('hidden');
 
-        const label = currentUser.displayName || currentUser.email || 'Usuario';
-        if (authUserChip) authUserChip.textContent = label;
-        if (userInfoText) userInfoText.textContent = `Sesión activa: ${label} · UID: ${currentUser.uid}`;
-        updateCloudStatus('Sesión verificada. Cada cambio se guardará en el espacio privado de este usuario.', 'ok');
-      } else if (currentUser && !verified) {
-        document.body.classList.add('auth-screen');
-        appShell?.classList.add('locked');
-        authGate?.classList.add('active');
-        document.querySelector('.auth-form-pro')?.classList.add('verification-required');
-        verifyPanel?.classList.remove('hidden');
+        const label = profile.name || currentUser.displayName || currentUser.email || 'Usuario';
+        if (authUserChip) authUserChip.textContent = profile.role === 'admin' ? `${label} · Admin` : label;
+        if (userInfoText) userInfoText.textContent = `Sesión activa: ${label} · Estado: aprobado · Rol: ${profile.role}`;
+        updateCloudStatus('Sesión aprobada. Cada cambio se guardará en el espacio privado de este usuario.', 'ok');
 
-        const label = currentUser.displayName || currentUser.email || 'Usuario sin verificar';
-        if (authUserChip) authUserChip.textContent = 'Correo sin verificar';
-        if (userInfoText) userInfoText.textContent = `Cuenta pendiente de verificación: ${label}`;
-        updateCloudStatus('Debes verificar tu correo para acceder a tu red.', 'info');
-        updateAuthMessage('Cuenta creada. Verifica tu correo para activar el acceso.', 'ok');
+        if (profile.role === 'admin') {
+          adminApprovalSection?.classList.remove('hidden');
+          await loadPendingUsers();
+        }
       } else {
         document.body.classList.add('auth-screen');
         appShell?.classList.add('locked');
         authGate?.classList.add('active');
         document.querySelector('.auth-form-pro')?.classList.remove('verification-required');
-        verifyPanel?.classList.add('hidden');
+        pendingPanel?.classList.add('hidden');
 
         if (authUserChip) authUserChip.textContent = 'Sin sesión';
         if (userInfoText) userInfoText.textContent = 'Inicia sesión para guardar y cargar una red privada.';
@@ -3561,12 +3809,15 @@
     async function handleLogin(email, password) {
       updateAuthMessage('Ingresando...');
       const credential = await signInWithEmailAndPassword(auth, email, password);
-      await reload(credential.user);
+      const profile = await ensureUserProfile(credential.user);
 
-      if (!credential.user.emailVerified) {
-        await sendEmailVerification(credential.user);
-        updateAuthMessage('Tu correo aún no está verificado. Te reenviamos el enlace de verificación.', 'error');
-        setAuthUI(credential.user);
+      if (profile.status === 'pending') {
+        updateAuthMessage('Tu cuenta aún está pendiente de aprobación por el usuario principal.', 'error');
+        return;
+      }
+
+      if (profile.status === 'blocked') {
+        updateAuthMessage('Tu cuenta fue bloqueada por el usuario principal.', 'error');
         return;
       }
 
@@ -3581,41 +3832,21 @@
         await updateProfile(credential.user, { displayName: name });
       }
 
-      await sendEmailVerification(credential.user);
-      updateAuthMessage('Cuenta creada. Revisa tu correo y confirma el enlace de verificación.', 'ok');
-      setAuthUI(credential.user);
-    }
+      const admin = isMainAdminEmail(credential.user.email);
+      await ensureUserProfile(credential.user, {
+        name,
+        role: admin ? 'admin' : 'user',
+        status: admin ? 'approved' : 'pending',
+        createdAt: new Date().toISOString()
+      });
 
-    async function checkEmailVerification() {
-      if (!auth.currentUser) {
-        updateAuthMessage('No hay una sesión activa para verificar.', 'error');
-        return;
-      }
+      updateAuthMessage(admin
+        ? 'Cuenta principal creada correctamente. Cargando tu espacio...'
+        : 'Cuenta creada. Queda pendiente hasta que el usuario principal apruebe el acceso.',
+        'ok'
+      );
 
-      await reload(auth.currentUser);
-
-      if (auth.currentUser.emailVerified) {
-        updateAuthMessage('Correo verificado correctamente. Cargando tu red...', 'ok');
-        setAuthUI(auth.currentUser);
-        isLoadingFromCloud = true;
-        data = loadData();
-        selectedId = data.id;
-        render();
-        isLoadingFromCloud = false;
-        await loadFromFirebase(false);
-      } else {
-        updateAuthMessage('Todavía no aparece verificado. Abre el enlace del correo y vuelve a intentarlo.', 'error');
-      }
-    }
-
-    async function resendVerificationEmail() {
-      if (!auth.currentUser) {
-        updateAuthMessage('No hay una sesión activa para reenviar el correo.', 'error');
-        return;
-      }
-
-      await sendEmailVerification(auth.currentUser);
-      updateAuthMessage('Correo de verificación reenviado. Revisa también la carpeta de spam o promociones.', 'ok');
+      await setAuthUI(credential.user);
     }
 
     async function handleLogout() {
@@ -5548,7 +5779,7 @@
         await handleLogin(authEmail.value.trim(), authPassword.value);
       } catch (error) {
         console.error(error);
-        updateAuthMessage('No se pudo ingresar. Revisa el correo, la contraseña o si la cuenta está pendiente de verificación.', 'error');
+        updateAuthMessage(getAuthErrorMessage(error), 'error');
       }
     });
 
@@ -5558,7 +5789,7 @@
         await handleRegister(registerName.value.trim(), registerEmail.value.trim(), registerPassword.value);
       } catch (error) {
         console.error(error);
-        updateAuthMessage('No se pudo crear la cuenta. La contraseña debe tener mínimo 6 caracteres y el correo debe ser válido.', 'error');
+        updateAuthMessage(getAuthErrorMessage(error), 'error');
       }
     });
 
@@ -5567,9 +5798,8 @@
 
     document.getElementById('btnLogout')?.addEventListener('click', handleLogout);
     document.getElementById('btnLogoutConfig')?.addEventListener('click', handleLogout);
-    document.getElementById('btnLogoutVerify')?.addEventListener('click', handleLogout);
-    document.getElementById('btnCheckVerification')?.addEventListener('click', checkEmailVerification);
-    document.getElementById('btnResendVerification')?.addEventListener('click', resendVerificationEmail);
+    document.getElementById('btnLogoutPending')?.addEventListener('click', handleLogout);
+    document.getElementById('btnRefreshUsers')?.addEventListener('click', loadPendingUsers);
 
     document.getElementById('btnSaveCloud')?.addEventListener('click', () => saveToFirebase(true));
     document.getElementById('btnLoadCloud')?.addEventListener('click', () => loadFromFirebase(true));
@@ -5654,18 +5884,24 @@
     });
 
     onAuthStateChanged(auth, async (user) => {
-      if (user) await reload(user);
-      setAuthUI(user);
+      await setAuthUI(user);
 
-      if (user && user.emailVerified) {
-        isLoadingFromCloud = true;
-        data = loadData();
-        selectedId = data.id;
-        render();
-        isLoadingFromCloud = false;
-        await loadFromFirebase(false);
+      if (user) {
+        const profile = await getUserProfile(user);
+        if (profile?.status === 'approved') {
+          isLoadingFromCloud = true;
+          data = loadData();
+          selectedId = data.id;
+          render();
+          isLoadingFromCloud = false;
+          await loadFromFirebase(false);
+        } else {
+          data = structuredClone(initialData);
+          selectedId = data.id;
+          render();
+        }
       } else {
-        currentUser = user || null;
+        currentUser = null;
         data = structuredClone(initialData);
         selectedId = data.id;
         render();
