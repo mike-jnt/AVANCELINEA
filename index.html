@@ -3597,7 +3597,12 @@
       } catch (error) {
         console.error('Error cargando desde Firebase:', error);
         isLoadingFromCloud = false;
-        updateCloudStatus('No se pudo cargar desde Firebase. Revisa las reglas de Firestore, Auth o la conexión.', 'error');
+        updateCloudStatus('No se pudo cargar desde Firebase. Se mostrará la copia local si existe. Revisa reglas, Auth o conexión.', 'error');
+        if (currentUser) {
+          data = loadData();
+          selectedId = data.id;
+          requestAnimationFrame(() => prepareAuthenticatedView());
+        }
         if (showAlert) alert('No se pudo cargar desde Firebase. Revisa las reglas de Firestore, Auth o la conexión.');
       }
     }
@@ -3810,6 +3815,7 @@
         document.body.classList.remove('auth-screen');
         authGate?.classList.remove('active');
         appShell?.classList.remove('locked');
+        requestAnimationFrame(updateZoomStageSize);
         document.querySelector('.auth-form-pro')?.classList.remove('verification-required');
         pendingPanel?.classList.add('hidden');
 
@@ -5769,6 +5775,31 @@
 
     window.addEventListener('resize', () => requestAnimationFrame(updateZoomStageSize));
 
+    function prepareAuthenticatedView() {
+      closePersonModal();
+      closeConfirm();
+      closeSummaryModal();
+      closeReportModal();
+      closeAdvancedRankModal();
+      closeRankInspector();
+
+      selectedId = data.id;
+      if (searchInput) searchInput.value = '';
+      updateSearchStatus('Busca una persona por nombre', 'empty');
+
+      const maxDepth = Math.max(1, getMaxNetworkDepth(data));
+      visibleLevels = Math.min(3, maxDepth);
+
+      setActivePage('inicio');
+      setNetworkZoom(1, false);
+      render();
+
+      requestAnimationFrame(() => {
+        setNetworkZoom(1, false);
+        updateZoomStageSize();
+      });
+    }
+
     function setActivePage(targetId) {
       const pages = document.querySelectorAll('.page-section');
       pages.forEach(page => page.classList.toggle('active', page.id === targetId));
@@ -5926,23 +5957,29 @@
 
         if (user) {
           const profile = await getUserProfile(user);
+
           if (profile?.status === 'approved') {
             isLoadingFromCloud = true;
             data = loadData();
             selectedId = data.id;
-            render();
+            prepareAuthenticatedView();
             isLoadingFromCloud = false;
+
             await loadFromFirebase(false);
+
+            // Después de cargar desde Firebase, vuelve a preparar la vista para que
+            // el sistema siempre entre limpio, centrado y con el inicio visible.
+            prepareAuthenticatedView();
           } else {
             data = structuredClone(initialData);
             selectedId = data.id;
-            render();
+            closeRankInspector();
           }
         } else {
           currentUser = null;
           data = structuredClone(initialData);
           selectedId = data.id;
-          render();
+          closeRankInspector();
         }
       } catch (error) {
         console.error('Error validando sesión:', error);
@@ -5951,9 +5988,9 @@
       }
     });
 
+    document.body.classList.add('auth-screen');
     setNetworkZoom(networkZoom, false);
     resetAdvanceTabs();
-    render();
   </script>
 </body>
 </html>
