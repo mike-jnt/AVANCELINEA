@@ -2239,6 +2239,412 @@
       white-space: nowrap;
     }
 
+
+    .auth-card-pro {
+      width: min(980px, 100%);
+      grid-template-columns: minmax(0, 1.05fr) minmax(330px, .95fr);
+      padding: 0;
+      overflow: hidden;
+      border-radius: 30px;
+      background: #ffffff;
+    }
+
+    .auth-brand-panel {
+      min-height: 560px;
+      padding: clamp(26px, 4vw, 42px);
+      background:
+        radial-gradient(circle at top right, rgba(249,131,1,.22), transparent 34%),
+        linear-gradient(135deg, #062f68 0%, #0a4f9e 58%, #f98301 145%);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .auth-brand-panel .eyebrow {
+      background: rgba(255,255,255,.16);
+      color: white;
+      border: 1px solid rgba(255,255,255,.22);
+      width: fit-content;
+    }
+
+    .auth-brand-panel h2 {
+      color: white;
+      margin: 0;
+      font-size: clamp(36px, 5vw, 64px);
+      letter-spacing: -.07em;
+      line-height: .95;
+    }
+
+    .auth-brand-panel p {
+      color: rgba(255,255,255,.86);
+      max-width: 520px;
+      font-size: 16px;
+    }
+
+    .auth-benefits {
+      display: grid;
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .auth-benefits div {
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 18px;
+      padding: 14px;
+      backdrop-filter: blur(10px);
+    }
+
+    .auth-benefits strong {
+      display: block;
+      color: white;
+      font-size: 14px;
+    }
+
+    .auth-benefits small {
+      display: block;
+      margin-top: 5px;
+      color: rgba(255,255,255,.78);
+      line-height: 1.35;
+    }
+
+    .auth-form-pro {
+      height: 100%;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      padding: clamp(24px, 4vw, 40px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .auth-form-head {
+      margin-bottom: 18px;
+    }
+
+    .auth-form-head h3 {
+      margin: 0;
+      color: var(--azul);
+      font-size: 30px;
+      letter-spacing: -.04em;
+    }
+
+    .auth-form-head p {
+      margin: 7px 0 0;
+      color: #667085;
+      line-height: 1.45;
+      font-size: 14px;
+    }
+
+
+    .auth-panel {
+      display: none;
+    }
+
+    .auth-panel.active {
+      display: block;
+    }
+
+    .auth-switch {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(6,47,104,.10);
+      color: #667085;
+      font-size: 13px;
+      font-weight: 750;
+      text-align: center;
+    }
+
+    .link-button {
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      color: #f98301;
+      padding: 0;
+      margin-left: 4px;
+      font-weight: 950;
+      text-decoration: underline;
+      width: auto;
+      min-height: 0;
+      display: inline;
+    }
+
+    .link-button:hover {
+      transform: none;
+      opacity: .82;
+    }
+
+    .auth-form-pro.verification-required .auth-panel,
+    .auth-form-pro.verification-required .auth-message {
+      display: none;
+    }
+
+    .verify-panel {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 18px;
+      background: #fff8ef;
+      border: 1px solid rgba(249,131,1,.24);
+      color: #6b3d05;
+    }
+
+    .verify-panel h4 {
+      margin: 0;
+      color: #6b3d05;
+      font-size: 16px;
+    }
+
+    .verify-panel p {
+      margin: 7px 0 0;
+      color: #714a16;
+      line-height: 1.45;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .verify-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+
+
+    /* Botones de acción centrados en login y registro */
+    .auth-actions {
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .auth-actions button {
+      width: auto !important;
+      min-width: 180px;
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+
+
+    /* Login elegante: tonos sobrios y profesionales */
+    .auth-gate {
+      background:
+        radial-gradient(circle at top left, rgba(3,31,73,.08), transparent 34%),
+        linear-gradient(135deg, #f4f6f9 0%, #eef2f7 52%, #ffffff 100%) !important;
+    }
+
+    .auth-card-pro {
+      background: #ffffff !important;
+      border: 1px solid rgba(3,31,73,.12) !important;
+      box-shadow: 0 28px 80px rgba(3, 31, 73, .16) !important;
+    }
+
+    .auth-brand-panel {
+      background:
+        radial-gradient(circle at top right, rgba(214, 173, 91, .18), transparent 34%),
+        linear-gradient(135deg, #061a33 0%, #0b2748 54%, #111827 100%) !important;
+      color: #ffffff !important;
+    }
+
+    .auth-brand-panel .eyebrow {
+      background: rgba(214, 173, 91, .12) !important;
+      border: 1px solid rgba(214, 173, 91, .32) !important;
+      color: #f3d99b !important;
+    }
+
+    .auth-brand-panel h2 {
+      color: #ffffff !important;
+    }
+
+        .network-hero {
+      position: relative;
+      width: 100%;
+      max-width: 360px;
+      height: 300px;
+      margin-top: 28px;
+      align-self: center;
+    }
+
+    .network-hero::before {
+      content: "";
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      left: 50%;
+      top: 98px;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(255,255,255,.98) 0%, #f2d38a 70%, rgba(214,173,91,.95) 100%);
+      box-shadow: 0 0 16px rgba(255,255,255,.28);
+      z-index: 2;
+    }
+
+    .hero-node {
+      position: absolute;
+      border-radius: 999px;
+      background: radial-gradient(circle at 35% 30%, #ffffff 0%, #f0f3f8 45%, #d6ad5b 100%);
+      box-shadow:
+        0 14px 34px rgba(0,0,0,.22),
+        inset 0 2px 8px rgba(255,255,255,.55);
+      border: 1px solid rgba(255,255,255,.35);
+      z-index: 3;
+    }
+
+    .hero-main {
+      width: 92px;
+      height: 92px;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .hero-child {
+      width: 58px;
+      height: 58px;
+      bottom: 24px;
+    }
+
+    .hero-child-left {
+      left: 10%;
+    }
+
+    .hero-child-center {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .hero-child-right {
+      right: 10%;
+    }
+
+    .hero-line {
+      position: absolute;
+      height: 4px;
+      border-radius: 999px;
+      transform-origin: left center;
+      background: linear-gradient(90deg, rgba(255,255,255,.95) 0%, rgba(214,173,91,.92) 100%);
+      box-shadow: 0 0 12px rgba(255,255,255,.14);
+      z-index: 1;
+    }
+
+    .hero-line-left {
+      width: 164px;
+      left: 50%;
+      top: 98px;
+      transform: rotate(122deg);
+    }
+
+    .hero-line-center {
+      width: 150px;
+      left: 50%;
+      top: 98px;
+      transform: rotate(90deg);
+    }
+
+    .hero-line-right {
+      width: 164px;
+      left: 50%;
+      top: 98px;
+      transform: rotate(58deg);
+    }
+
+.auth-brand-panel p {
+      color: rgba(255,255,255,.78) !important;
+    }
+
+    .auth-benefits div {
+      background: rgba(255,255,255,.07) !important;
+      border: 1px solid rgba(255,255,255,.12) !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+    }
+
+    .auth-benefits strong {
+      color: #ffffff !important;
+    }
+
+    .auth-benefits small {
+      color: rgba(255,255,255,.68) !important;
+    }
+
+    .auth-form-pro {
+      background: #ffffff !important;
+    }
+
+    .auth-form-head h3,
+    .auth-field label {
+      color: #061a33 !important;
+    }
+
+    .auth-form-head p,
+    .auth-field small,
+    .auth-switch {
+      color: #667085 !important;
+    }
+
+    .auth-field input {
+      background: #f8fafc !important;
+      border: 1px solid rgba(3,31,73,.14) !important;
+      color: #061a33 !important;
+    }
+
+    .auth-field input:focus {
+      border-color: rgba(214, 173, 91, .75) !important;
+      box-shadow: 0 0 0 4px rgba(214, 173, 91, .14);
+    }
+
+    .auth-form-pro .btn-blue,
+    .auth-form-pro .btn-gold {
+      background: linear-gradient(135deg, #061a33 0%, #0b2748 100%) !important;
+      color: #ffffff !important;
+      border: 1px solid rgba(255,255,255,.08) !important;
+      box-shadow: 0 14px 28px rgba(6,26,51,.18) !important;
+    }
+
+    .auth-form-pro .btn-blue:hover,
+    .auth-form-pro .btn-gold:hover {
+      box-shadow: 0 18px 34px rgba(6,26,51,.24) !important;
+    }
+
+    .link-button {
+      color: #9b6b13 !important;
+      text-decoration-color: rgba(155,107,19,.45) !important;
+    }
+
+    .auth-message {
+      background: #f8fafc !important;
+      border: 1px solid rgba(3,31,73,.10) !important;
+      color: #475467 !important;
+    }
+
+    .verify-panel {
+      background: #fbf7ee !important;
+      border-color: rgba(214,173,91,.32) !important;
+      color: #5d4213 !important;
+    }
+
+    .verify-panel h4 {
+      color: #5d4213 !important;
+    }
+
+    .verify-panel p {
+      color: #6f5421 !important;
+    }
+
+
+    body.auth-screen header {
+      display: none !important;
+    }
+
+    body.auth-screen .auth-gate {
+      min-height: 100vh !important;
+      padding-top: 24px;
+      padding-bottom: 24px;
+    }
+
     .hidden { display: none !important; }
     input[type="file"] { display: none; }
 
@@ -2296,6 +2702,20 @@
       .candidate-tabs { flex-direction: column; }
       .candidate-tab { width: 100%; justify-content: space-between; }
       .candidate-progress { grid-template-columns: 1fr; }
+      .auth-card-pro { grid-template-columns: 1fr; }
+      .auth-brand-panel { min-height: auto; padding: 26px; }
+      .network-hero { max-width: 300px; height: 250px; margin-inline: auto; }
+      .network-hero::before { top: 84px; width: 12px; height: 12px; }
+      .hero-main { width: 78px; height: 78px; top: 10px; }
+      .hero-child { width: 50px; height: 50px; bottom: 18px; }
+      .hero-child-left { left: 8%; }
+      .hero-child-right { right: 8%; }
+      .hero-line { height: 3px; }
+      .hero-line-left { width: 132px; top: 84px; transform: rotate(124deg); }
+      .hero-line-center { width: 126px; top: 84px; transform: rotate(90deg); }
+      .hero-line-right { width: 132px; top: 84px; transform: rotate(56deg); }
+      .auth-form-pro { padding: 22px; }
+      .auth-brand-panel h2 { font-size: 38px; }
       .auth-card { grid-template-columns: 1fr; }
       .auth-actions { grid-template-columns: 1fr; }
       button, .file-label { width: 100%; }
@@ -2326,37 +2746,95 @@
   </header>
 
   <section class="auth-gate active" id="authGate">
-    <div class="auth-card">
-      <div>
-        <span class="eyebrow">Acceso privado</span>
-        <h2>Ingresa a tu red</h2>
-        <p>Cada usuario tendrá su propio espacio y sus datos se guardarán separados en Firebase.</p>
+    <div class="auth-card auth-card-pro">
+      <div class="auth-brand-panel">
+        <h2>Avance de estructura</h2>
+
+        <div class="network-hero" aria-hidden="true">
+          <div class="hero-node hero-main"></div>
+
+          <div class="hero-line hero-line-left"></div>
+          <div class="hero-line hero-line-center"></div>
+          <div class="hero-line hero-line-right"></div>
+
+          <div class="hero-node hero-child hero-child-left"></div>
+          <div class="hero-node hero-child hero-child-center"></div>
+          <div class="hero-node hero-child hero-child-right"></div>
+        </div>
       </div>
 
-      <form id="authForm" class="auth-form">
-        <div class="auth-field">
-          <label for="authName">Nombre</label>
-          <input id="authName" type="text" autocomplete="name" placeholder="Ej: Jean Carlo" />
-          <small>Solo se usa al crear una cuenta nueva.</small>
-        </div>
+      <div class="auth-form auth-form-pro">
+        <form id="authForm" class="auth-panel active">
+          <div class="auth-form-head">
+            <h3>Iniciar sesión</h3>
+            <p>Ingresa con tu correo y contraseña para acceder a tu red.</p>
+          </div>
 
-        <div class="auth-field">
-          <label for="authEmail">Correo</label>
-          <input id="authEmail" type="email" autocomplete="email" placeholder="correo@ejemplo.com" required />
-        </div>
+          <div class="auth-field">
+            <label for="authEmail">Correo electrónico</label>
+            <input id="authEmail" type="email" autocomplete="email" placeholder="correo@ejemplo.com" required />
+          </div>
 
-        <div class="auth-field">
-          <label for="authPassword">Contraseña</label>
-          <input id="authPassword" type="password" autocomplete="current-password" placeholder="Mínimo 6 caracteres" required />
-        </div>
+          <div class="auth-field">
+            <label for="authPassword">Contraseña</label>
+            <input id="authPassword" type="password" autocomplete="current-password" placeholder="Tu contraseña" required />
+          </div>
 
-        <div class="auth-actions">
-          <button class="btn-blue" type="submit" id="btnLogin">Ingresar</button>
-          <button class="btn-gold" type="button" id="btnRegister">Crear cuenta</button>
-        </div>
+          <div class="auth-actions">
+            <button class="btn-blue" type="submit" id="btnLogin">Ingresar</button>
+          </div>
 
-        <div class="auth-message" id="authMessage">Ingresa con tu correo o crea una cuenta nueva.</div>
-      </form>
+          <div class="auth-switch">
+            ¿No tienes cuenta?
+            <button class="link-button" type="button" id="btnShowRegister">Crear cuenta nueva</button>
+          </div>
+        </form>
+
+        <form id="registerForm" class="auth-panel">
+          <div class="auth-form-head">
+            <h3>Crear cuenta</h3>
+            <p>Registra tus datos. Después enviaremos un correo de verificación para activar el acceso.</p>
+          </div>
+
+          <div class="auth-field">
+            <label for="registerName">Nombre</label>
+            <input id="registerName" type="text" autocomplete="name" placeholder="Ej: Jean Carlo" required />
+          </div>
+
+          <div class="auth-field">
+            <label for="registerEmail">Correo electrónico</label>
+            <input id="registerEmail" type="email" autocomplete="email" placeholder="correo@ejemplo.com" required />
+          </div>
+
+          <div class="auth-field">
+            <label for="registerPassword">Contraseña</label>
+            <input id="registerPassword" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres" required />
+          </div>
+
+          <div class="auth-actions">
+            <button class="btn-gold" type="submit" id="btnRegister">Crear cuenta</button>
+          </div>
+
+          <div class="auth-switch">
+            ¿Ya tienes cuenta?
+            <button class="link-button" type="button" id="btnShowLogin">Iniciar sesión</button>
+          </div>
+        </form>
+
+        <div class="auth-message" id="authMessage">Ingresa con tu cuenta o crea una nueva desde el formulario de registro.</div>
+
+        <div class="verify-panel hidden" id="verifyPanel">
+          <div>
+            <h4>Verifica tu correo</h4>
+            <p>Te enviamos un enlace de verificación. Abre tu correo, confirma tu cuenta y luego presiona “Ya verifiqué”.</p>
+          </div>
+          <div class="verify-actions">
+            <button class="btn-blue" type="button" id="btnCheckVerification">Ya verifiqué</button>
+            <button class="btn-light" type="button" id="btnResendVerification">Reenviar correo</button>
+            <button class="btn-red" type="button" id="btnLogoutVerify">Salir</button>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -2782,7 +3260,9 @@
       createUserWithEmailAndPassword,
       signInWithEmailAndPassword,
       signOut,
-      updateProfile
+      updateProfile,
+      sendEmailVerification,
+      reload
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
     const firebaseConfig = {
@@ -2842,12 +3322,16 @@
     const authGate = document.getElementById('authGate');
     const appShell = document.getElementById('appShell');
     const authForm = document.getElementById('authForm');
-    const authName = document.getElementById('authName');
+    const registerForm = document.getElementById('registerForm');
     const authEmail = document.getElementById('authEmail');
     const authPassword = document.getElementById('authPassword');
+    const registerName = document.getElementById('registerName');
+    const registerEmail = document.getElementById('registerEmail');
+    const registerPassword = document.getElementById('registerPassword');
     const authMessage = document.getElementById('authMessage');
     const authUserChip = document.getElementById('authUserChip');
     const userInfoText = document.getElementById('userInfoText');
+    const verifyPanel = document.getElementById('verifyPanel');
     const personModal = document.getElementById('personModal');
     const summaryModal = document.getElementById('summaryModal');
     const reportModal = document.getElementById('reportModal');
@@ -3021,36 +3505,117 @@
       };
     }
 
+    function showAuthPanel(panel = 'login') {
+      const loginActive = panel === 'login';
+      authForm?.classList.toggle('active', loginActive);
+      registerForm?.classList.toggle('active', !loginActive);
+      verifyPanel?.classList.add('hidden');
+      document.querySelector('.auth-form-pro')?.classList.remove('verification-required');
+      updateAuthMessage(loginActive
+        ? 'Ingresa con tu cuenta registrada.'
+        : 'Crea tu cuenta y luego verifica tu correo para activar el acceso.'
+      );
+    }
+
     function setAuthUI(user) {
       currentUser = user || null;
+      const verified = Boolean(currentUser?.emailVerified);
 
-      if (currentUser) {
+      if (currentUser && verified) {
+        document.body.classList.remove('auth-screen');
         authGate?.classList.remove('active');
         appShell?.classList.remove('locked');
+        document.querySelector('.auth-form-pro')?.classList.remove('verification-required');
+        verifyPanel?.classList.add('hidden');
+
         const label = currentUser.displayName || currentUser.email || 'Usuario';
         if (authUserChip) authUserChip.textContent = label;
         if (userInfoText) userInfoText.textContent = `Sesión activa: ${label} · UID: ${currentUser.uid}`;
-        updateCloudStatus('Sesión iniciada. Cada cambio se guardará en el espacio privado de este usuario.', 'ok');
-      } else {
+        updateCloudStatus('Sesión verificada. Cada cambio se guardará en el espacio privado de este usuario.', 'ok');
+      } else if (currentUser && !verified) {
+        document.body.classList.add('auth-screen');
         appShell?.classList.add('locked');
         authGate?.classList.add('active');
+        document.querySelector('.auth-form-pro')?.classList.add('verification-required');
+        verifyPanel?.classList.remove('hidden');
+
+        const label = currentUser.displayName || currentUser.email || 'Usuario sin verificar';
+        if (authUserChip) authUserChip.textContent = 'Correo sin verificar';
+        if (userInfoText) userInfoText.textContent = `Cuenta pendiente de verificación: ${label}`;
+        updateCloudStatus('Debes verificar tu correo para acceder a tu red.', 'info');
+        updateAuthMessage('Cuenta creada. Verifica tu correo para activar el acceso.', 'ok');
+      } else {
+        document.body.classList.add('auth-screen');
+        appShell?.classList.add('locked');
+        authGate?.classList.add('active');
+        document.querySelector('.auth-form-pro')?.classList.remove('verification-required');
+        verifyPanel?.classList.add('hidden');
+
         if (authUserChip) authUserChip.textContent = 'Sin sesión';
         if (userInfoText) userInfoText.textContent = 'Inicia sesión para guardar y cargar una red privada.';
         updateCloudStatus('Inicia sesión para activar Firebase por usuario.', 'info');
+        showAuthPanel('login');
       }
     }
 
     async function handleLogin(email, password) {
       updateAuthMessage('Ingresando...');
-      await signInWithEmailAndPassword(auth, email, password);
+      const credential = await signInWithEmailAndPassword(auth, email, password);
+      await reload(credential.user);
+
+      if (!credential.user.emailVerified) {
+        await sendEmailVerification(credential.user);
+        updateAuthMessage('Tu correo aún no está verificado. Te reenviamos el enlace de verificación.', 'error');
+        setAuthUI(credential.user);
+        return;
+      }
+
       updateAuthMessage('Ingreso correcto.', 'ok');
     }
 
     async function handleRegister(name, email, password) {
       updateAuthMessage('Creando cuenta...');
       const credential = await createUserWithEmailAndPassword(auth, email, password);
-      if (name) await updateProfile(credential.user, { displayName: name });
-      updateAuthMessage('Cuenta creada correctamente.', 'ok');
+
+      if (name) {
+        await updateProfile(credential.user, { displayName: name });
+      }
+
+      await sendEmailVerification(credential.user);
+      updateAuthMessage('Cuenta creada. Revisa tu correo y confirma el enlace de verificación.', 'ok');
+      setAuthUI(credential.user);
+    }
+
+    async function checkEmailVerification() {
+      if (!auth.currentUser) {
+        updateAuthMessage('No hay una sesión activa para verificar.', 'error');
+        return;
+      }
+
+      await reload(auth.currentUser);
+
+      if (auth.currentUser.emailVerified) {
+        updateAuthMessage('Correo verificado correctamente. Cargando tu red...', 'ok');
+        setAuthUI(auth.currentUser);
+        isLoadingFromCloud = true;
+        data = loadData();
+        selectedId = data.id;
+        render();
+        isLoadingFromCloud = false;
+        await loadFromFirebase(false);
+      } else {
+        updateAuthMessage('Todavía no aparece verificado. Abre el enlace del correo y vuelve a intentarlo.', 'error');
+      }
+    }
+
+    async function resendVerificationEmail() {
+      if (!auth.currentUser) {
+        updateAuthMessage('No hay una sesión activa para reenviar el correo.', 'error');
+        return;
+      }
+
+      await sendEmailVerification(auth.currentUser);
+      updateAuthMessage('Correo de verificación reenviado. Revisa también la carpeta de spam o promociones.', 'ok');
     }
 
     async function handleLogout() {
@@ -4983,21 +5548,28 @@
         await handleLogin(authEmail.value.trim(), authPassword.value);
       } catch (error) {
         console.error(error);
-        updateAuthMessage('No se pudo ingresar. Revisa el correo y la contraseña.', 'error');
+        updateAuthMessage('No se pudo ingresar. Revisa el correo, la contraseña o si la cuenta está pendiente de verificación.', 'error');
       }
     });
 
-    document.getElementById('btnRegister')?.addEventListener('click', async () => {
+    registerForm?.addEventListener('submit', async (event) => {
+      event.preventDefault();
       try {
-        await handleRegister(authName.value.trim(), authEmail.value.trim(), authPassword.value);
+        await handleRegister(registerName.value.trim(), registerEmail.value.trim(), registerPassword.value);
       } catch (error) {
         console.error(error);
         updateAuthMessage('No se pudo crear la cuenta. La contraseña debe tener mínimo 6 caracteres y el correo debe ser válido.', 'error');
       }
     });
 
+    document.getElementById('btnShowRegister')?.addEventListener('click', () => showAuthPanel('register'));
+    document.getElementById('btnShowLogin')?.addEventListener('click', () => showAuthPanel('login'));
+
     document.getElementById('btnLogout')?.addEventListener('click', handleLogout);
     document.getElementById('btnLogoutConfig')?.addEventListener('click', handleLogout);
+    document.getElementById('btnLogoutVerify')?.addEventListener('click', handleLogout);
+    document.getElementById('btnCheckVerification')?.addEventListener('click', checkEmailVerification);
+    document.getElementById('btnResendVerification')?.addEventListener('click', resendVerificationEmail);
 
     document.getElementById('btnSaveCloud')?.addEventListener('click', () => saveToFirebase(true));
     document.getElementById('btnLoadCloud')?.addEventListener('click', () => loadFromFirebase(true));
@@ -5082,9 +5654,10 @@
     });
 
     onAuthStateChanged(auth, async (user) => {
+      if (user) await reload(user);
       setAuthUI(user);
 
-      if (user) {
+      if (user && user.emailVerified) {
         isLoadingFromCloud = true;
         data = loadData();
         selectedId = data.id;
@@ -5092,7 +5665,7 @@
         isLoadingFromCloud = false;
         await loadFromFirebase(false);
       } else {
-        currentUser = null;
+        currentUser = user || null;
         data = structuredClone(initialData);
         selectedId = data.id;
         render();
