@@ -814,6 +814,81 @@
       color: #162033;
     }
 
+    .frontal-focus-panel {
+      padding: 14px 18px 16px;
+      border-bottom: 1px solid var(--borde);
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    }
+
+    .frontal-focus-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .frontal-focus-head h3 {
+      margin: 0 0 4px;
+      color: var(--azul);
+      font-size: 16px;
+      letter-spacing: -.02em;
+    }
+
+    .frontal-focus-head p {
+      margin: 0;
+      color: #667085;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .frontal-focus-status {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 8px 11px;
+      background: #fff8ef;
+      color: #8a4b00;
+      border: 1px solid rgba(249,131,1,.22);
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .frontal-focus-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .frontal-focus-btn {
+      box-shadow: none;
+      border: 1px solid rgba(6,47,104,.12);
+      background: #edf3fb;
+      color: var(--azul);
+      min-height: 38px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 950;
+      width: auto;
+    }
+
+    .frontal-focus-btn.active {
+      background: linear-gradient(135deg, var(--dorado2), var(--dorado));
+      color: #162033;
+      border-color: transparent;
+    }
+
+    .frontal-focus-btn.empty {
+      cursor: default;
+      background: #f8fbff;
+      color: #667085;
+      border-style: dashed;
+    }
+
     input {
       width: 100%;
       border: 1px solid rgba(6,47,104,.18);
@@ -2842,6 +2917,10 @@
       main { padding: 14px 10px 28px; }
       .dashboard, .home-grid { grid-template-columns: 1fr; }
       .tree-head { align-items: stretch; }
+      .frontal-focus-head { flex-direction: column; }
+      .frontal-focus-status { width: 100%; justify-content: center; }
+      .frontal-focus-buttons { flex-direction: column; align-items: stretch; }
+      .frontal-focus-btn { width: 100%; }
       .tree-controls, .top-actions, .config-actions, .main-nav { flex-direction: column; align-items: stretch; }
       .zoom-toolbar:not(.zoom-vertical) { justify-content: center; }
       .zoom-toolbar:not(.zoom-vertical) button { width: auto; }
@@ -3055,6 +3134,17 @@
             <small class="search-status empty" id="searchStatus">Escribe un nombre</small>
           </div>
         </div>
+        <div class="frontal-focus-panel" id="frontalFocusPanel">
+          <div class="frontal-focus-head">
+            <div>
+              <h3>Trabajar por frontal</h3>
+              <p>Selecciona un frontal de nivel 1 para verlo como tarjeta principal y llenar solo su estructura.</p>
+            </div>
+            <span class="frontal-focus-status" id="frontalFocusStatus">Vista completa</span>
+          </div>
+          <div class="frontal-focus-buttons" id="frontalFocusButtons"></div>
+        </div>
+
         <div class="network-board" id="networkBoard">
           <div class="zoom-toolbar zoom-vertical" aria-label="Controles de zoom">
             <button class="btn-light zoom-symbol" type="button" id="zoomIn" title="Acercar">+</button>
@@ -3510,6 +3600,7 @@
     let data = loadData();
     if (data.name === 'Yo / Líder principal') data.name = 'Jean Carlo';
     let selectedId = data.id;
+    let focusedRootId = data.id;
     let personModalMode = 'add';
     let personModalTargetId = null;
     let pendingConfirm = null;
@@ -3559,6 +3650,8 @@
     const zoomOut = document.getElementById('zoomOut');
     const zoomReset = document.getElementById('zoomReset');
     const searchStatus = document.getElementById('searchStatus');
+    const frontalFocusButtons = document.getElementById('frontalFocusButtons');
+    const frontalFocusStatus = document.getElementById('frontalFocusStatus');
     const levelToolbar = document.getElementById('levelFilterToolbar');
     const networkBoard = document.getElementById('networkBoard');
     const rankInspector = document.getElementById('rankInspector');
@@ -3674,6 +3767,7 @@
         if (!snapshot.exists()) {
           data = createInitialDataForUser();
           selectedId = data.id;
+          focusedRootId = data.id;
           localStorage.setItem(getCurrentStorageKey(), JSON.stringify(data));
           render();
           await saveToFirebase(false);
@@ -3692,6 +3786,7 @@
         isLoadingFromCloud = true;
         data = normalizeNode(payload.data);
         selectedId = data.id;
+        focusedRootId = data.id;
         localStorage.setItem(getCurrentStorageKey(), JSON.stringify(data));
         render();
         isLoadingFromCloud = false;
@@ -3705,6 +3800,7 @@
         if (currentUser) {
           data = loadData();
           selectedId = data.id;
+          focusedRootId = data.id;
           requestAnimationFrame(() => prepareAuthenticatedView());
         }
         if (showAlert) alert('No se pudo cargar desde Firebase. Revisa las reglas de Firestore, Auth o la conexión.');
@@ -4137,13 +4233,95 @@
       return maxDepth;
     }
 
+    function getFrontalFocusRoot() {
+      const found = findNode(focusedRootId);
+      const isValidRoot = found && (found.node.id === data.id || (data.children || []).some(child => child.id === found.node.id));
+      if (!isValidRoot) {
+        focusedRootId = data.id;
+        return data;
+      }
+      return found.node;
+    }
+
+    function getTopFrontalIdForNode(nodeId) {
+      const path = getNodePath(nodeId);
+      if (!path || path.length < 2) return data.id;
+      return path[1].id;
+    }
+
+    function isNodeInsideFocusedRoot(nodeId) {
+      const root = getFrontalFocusRoot();
+      let inside = false;
+      traverse(root, node => {
+        if (node.id === nodeId) inside = true;
+      });
+      return inside;
+    }
+
+    function renderFrontalFocusButtons() {
+      if (!frontalFocusButtons) return;
+      const frontals = data.children || [];
+      const root = getFrontalFocusRoot();
+      const isFullView = root.id === data.id;
+
+      if (frontalFocusStatus) {
+        frontalFocusStatus.textContent = isFullView
+          ? 'Vista completa de toda la red'
+          : `Vista enfocada: ${root.name}`;
+      }
+
+      const fullButton = `
+        <button class="frontal-focus-btn ${isFullView ? 'active' : ''}" type="button" data-focus-root-id="${escapeHtml(data.id)}">
+          Red completa
+        </button>
+      `;
+
+      if (!frontals.length) {
+        frontalFocusButtons.innerHTML = fullButton + '<button class="frontal-focus-btn empty" type="button" disabled>Agrega frontales de nivel 1 para activar esta vista</button>';
+        return;
+      }
+
+      frontalFocusButtons.innerHTML = fullButton + frontals.map(frontal => `
+        <button class="frontal-focus-btn ${root.id === frontal.id ? 'active' : ''}" type="button" data-focus-root-id="${escapeHtml(frontal.id)}">
+          ${escapeHtml(frontal.name)}
+        </button>
+      `).join('');
+    }
+
+    function setFrontalFocus(rootId = data.id, shouldRender = true) {
+      const targetId = rootId || data.id;
+      const found = findNode(targetId);
+      const validRootId = found && (found.node.id === data.id || (data.children || []).some(child => child.id === found.node.id))
+        ? found.node.id
+        : data.id;
+
+      focusedRootId = validRootId;
+      const root = getFrontalFocusRoot();
+      selectedId = root.id;
+      expandDescendants(root);
+      closeRankInspector();
+
+      const maxDepth = Math.max(1, getMaxNetworkDepth(root));
+      visibleLevels = Math.min(3, maxDepth);
+      localStorage.setItem('constructor_red_4life_visible_levels', String(visibleLevels));
+      pendingLevelAutoFit = true;
+      pendingSearchFocusId = root.id;
+      pendingSearchAutoFitDepth = Math.max(1, Math.min(visibleLevels, getSubtreeDepth(root) + 1));
+
+      if (searchInput) searchInput.value = '';
+      updateSearchStatus(root.id === data.id ? 'Vista completa de la red' : `Trabajando solo la estructura de ${root.name}`, 'ok');
+
+      if (shouldRender) render();
+    }
+
     function getLevelButtonText(depth) {
       return `${depth} línea`;
     }
 
     function renderLevelButtons() {
       if (!levelToolbar) return;
-      const maxDepth = getMaxNetworkDepth(data);
+      const activeRoot = getFrontalFocusRoot();
+      const maxDepth = getMaxNetworkDepth(activeRoot);
       levelToolbar.innerHTML = '';
 
       if (maxDepth === 0) {
@@ -4168,7 +4346,8 @@
     }
 
     function setVisibleLevels(depth, shouldRender = true) {
-      const maxDepth = Math.max(1, getMaxNetworkDepth(data));
+      const activeRoot = getFrontalFocusRoot();
+      const maxDepth = Math.max(1, getMaxNetworkDepth(activeRoot));
       visibleLevels = clamp(Number(depth) || maxDepth, 1, maxDepth);
       localStorage.setItem('constructor_red_4life_visible_levels', String(visibleLevels));
       renderLevelButtons();
@@ -4269,9 +4448,11 @@
       }
 
       const firstMatch = matches[0].node;
-      const firstMatchLevel = matches[0].level;
+      focusedRootId = getTopFrontalIdForNode(firstMatch.id);
+      const activeRoot = getFrontalFocusRoot();
+      const firstMatchLevel = getRelativeLevel(firstMatch.id, activeRoot);
       const subtreeDepth = getSubtreeDepth(firstMatch);
-      const maxDepth = Math.max(1, getMaxNetworkDepth(data));
+      const maxDepth = Math.max(1, getMaxNetworkDepth(activeRoot));
       const neededVisibleLevel = clamp(firstMatchLevel + subtreeDepth, Math.max(1, firstMatchLevel), maxDepth);
 
       if (!document.getElementById('miRed').classList.contains('active')) {
@@ -4279,7 +4460,7 @@
       }
 
       // La búsqueda debe mostrar la persona encontrada y también la red que tiene debajo.
-      // Por eso ampliamos automáticamente la profundidad visible hasta cubrir toda su estructura.
+      // Si la persona pertenece a un frontal de nivel 1, activamos automáticamente esa vista enfocada.
       if (neededVisibleLevel > visibleLevels) {
         setVisibleLevels(neededVisibleLevel, false);
       }
@@ -4409,7 +4590,8 @@
     function centerVisibleStructureAfterZoom() {
       if (!canvasEl || !treeEl) return;
 
-      const rootNode = treeEl.querySelector('.node[data-id="' + data.id + '"]');
+      const activeRoot = getFrontalFocusRoot();
+      const rootNode = treeEl.querySelector('.node[data-id="' + activeRoot.id + '"]');
       const canvasRect = canvasEl.getBoundingClientRect();
       const maxLeft = Math.max(0, canvasEl.scrollWidth - canvasEl.clientWidth);
       const maxTop = Math.max(0, canvasEl.scrollHeight - canvasEl.clientHeight);
@@ -4503,9 +4685,12 @@
       const shouldAutoFitLevel = pendingLevelAutoFit;
       pendingLevelAutoFit = false;
       pendingSearchAutoFitDepth = null;
+      const activeRoot = getFrontalFocusRoot();
+      if (!isNodeInsideFocusedRoot(selectedId)) selectedId = activeRoot.id;
+      renderFrontalFocusButtons();
       renderLevelButtons();
       treeEl.innerHTML = '';
-      treeEl.appendChild(renderTree(data, 0, search));
+      treeEl.appendChild(renderTree(activeRoot, 0, search));
       requestAnimationFrame(() => {
         updateZoomStageSize();
         if (shouldAutoFitLevel) {
@@ -5659,9 +5844,12 @@
     function locatePersonInNetwork(personId) {
       const found = findNode(personId);
       if (!found) return;
+      focusedRootId = getTopFrontalIdForNode(found.node.id);
+      const activeRoot = getFrontalFocusRoot();
+      const relativeLevel = getRelativeLevel(found.node.id, activeRoot);
       const subtreeDepth = getSubtreeDepth(found.node);
-      const maxDepth = Math.max(1, getMaxNetworkDepth(data));
-      const neededVisibleLevel = clamp(found.level + subtreeDepth, Math.max(1, found.level), maxDepth);
+      const maxDepth = Math.max(1, getMaxNetworkDepth(activeRoot));
+      const neededVisibleLevel = clamp(relativeLevel + subtreeDepth, Math.max(1, relativeLevel), maxDepth);
 
       if (!document.getElementById('miRed').classList.contains('active')) {
         setActivePage('miRed');
@@ -5833,7 +6021,9 @@
       found.node.collapsed = false;
       selectedId = person.id;
 
-      const newPersonLevel = found.level + 1;
+      const activeRoot = getFrontalFocusRoot();
+      const parentRelativeLevel = getRelativeLevel(found.node.id, activeRoot);
+      const newPersonLevel = parentRelativeLevel + 1;
       if (newPersonLevel > visibleLevels) {
         visibleLevels = newPersonLevel;
         localStorage.setItem('constructor_red_4life_visible_levels', String(visibleLevels));
@@ -5847,6 +6037,9 @@
       const found = findNode(id);
       if (!found || !found.parent) return;
       found.parent.children = found.parent.children.filter(child => child.id !== id);
+      if (focusedRootId === id || !findNode(focusedRootId)) {
+        focusedRootId = data.id;
+      }
       selectedId = found.parent.id;
       render();
     }
@@ -5920,6 +6113,12 @@
       setVisibleLevels(Number(button.dataset.levelDepth));
     });
 
+    frontalFocusButtons?.addEventListener('click', event => {
+      const button = event.target.closest('[data-focus-root-id]');
+      if (!button || button.disabled) return;
+      setFrontalFocus(button.dataset.focusRootId);
+    });
+
     document.querySelectorAll('.candidate-tab').forEach(button => {
       button.addEventListener('click', () => {
         setAdvanceTab(button.dataset.rank, button.dataset.view);
@@ -5952,6 +6151,7 @@
       closeRankInspector();
 
       selectedId = data.id;
+      focusedRootId = data.id;
       if (searchInput) searchInput.value = '';
       updateSearchStatus('Busca una persona por nombre', 'empty');
 
@@ -6005,6 +6205,7 @@
       askConfirm('Reiniciar red', 'Esto borrará toda la estructura guardada en este navegador y dejará solo el líder principal.', () => {
         data = currentUser ? createInitialDataForUser() : structuredClone(initialData);
         selectedId = data.id;
+        focusedRootId = data.id;
         render();
       });
     });
@@ -6063,6 +6264,7 @@
           if (!imported || !imported.id || !imported.name) throw new Error('Archivo inválido');
           data = imported;
           selectedId = data.id;
+          focusedRootId = data.id;
           render();
         } catch (error) {
           alert('No se pudo importar el archivo. Verifica que sea una red exportada desde esta página.');
@@ -6131,6 +6333,7 @@
             isLoadingFromCloud = true;
             data = loadData();
             selectedId = data.id;
+            focusedRootId = data.id;
             prepareAuthenticatedView();
             isLoadingFromCloud = false;
 
@@ -6142,12 +6345,14 @@
           } else {
             data = structuredClone(initialData);
             selectedId = data.id;
+            focusedRootId = data.id;
             closeRankInspector();
           }
         } else {
           currentUser = null;
           data = structuredClone(initialData);
           selectedId = data.id;
+          focusedRootId = data.id;
           closeRankInspector();
         }
       } catch (error) {
