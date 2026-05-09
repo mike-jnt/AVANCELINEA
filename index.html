@@ -2890,6 +2890,197 @@
       justify-content: flex-end;
     }
 
+    .codes-section {
+      scroll-margin-top: 18px;
+    }
+
+    .codes-card {
+      background: rgba(255,255,255,.95);
+      border: 1px solid var(--borde);
+      border-radius: 22px;
+      box-shadow: var(--sombra);
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .codes-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .codes-head h3 {
+      margin: 0 0 5px;
+      color: var(--azul);
+      font-size: 21px;
+      letter-spacing: -.03em;
+    }
+
+    .codes-head p {
+      margin: 0;
+      color: #667085;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .codes-search-box {
+      margin: 0 0 14px;
+      background: #f8fbff;
+      border: 1px solid rgba(6,47,104,.10);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .codes-search-box label {
+      display: block;
+      margin-bottom: 7px;
+      color: #344054;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .codes-search-box input {
+      width: 100%;
+      border: 1px solid rgba(6,47,104,.14);
+      border-radius: 14px;
+      padding: 12px 13px;
+      background: #ffffff;
+      color: #031f49;
+      font-size: 14px;
+      font-weight: 750;
+      outline: none;
+    }
+
+    .codes-search-box small {
+      display: block;
+      margin-top: 7px;
+      color: #667085;
+      font-size: 12px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .codes-summary {
+      margin: 0 0 12px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: #fff8ef;
+      border: 1px solid rgba(249,131,1,.20);
+      color: #704300;
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 850;
+    }
+
+    .codes-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .code-user-card {
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      border: 1px solid rgba(6,47,104,.10);
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: 0 10px 22px rgba(16,28,52,.07);
+    }
+
+    .code-user-card h4 {
+      margin: 0;
+      color: #031f49;
+      font-size: 17px;
+      font-weight: 950;
+      letter-spacing: -.02em;
+    }
+
+    .code-user-card small {
+      display: block;
+      margin-top: 5px;
+      color: #667085;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .code-field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .code-field {
+      background: rgba(255,255,255,.82);
+      border: 1px solid rgba(6,47,104,.08);
+      border-radius: 14px;
+      padding: 11px 12px;
+      min-width: 0;
+    }
+
+    .code-field span {
+      display: block;
+      color: #667085;
+      font-size: 10px;
+      font-weight: 950;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .code-field strong {
+      display: block;
+      margin-top: 6px;
+      color: var(--azul);
+      font-size: 15px;
+      line-height: 1.25;
+      word-break: break-word;
+    }
+
+    .code-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .code-edit-user-box {
+      margin: 10px 0 14px;
+      padding: 12px;
+      border-radius: 16px;
+      background: #f8fbff;
+      border: 1px solid rgba(6,47,104,.10);
+      color: #475467;
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 750;
+    }
+
+    .code-edit-user-box strong {
+      display: block;
+      color: var(--azul);
+      font-size: 15px;
+      margin-bottom: 3px;
+    }
+
+    .code-edit-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .code-edit-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    @media (max-width: 620px) {
+      .code-edit-grid { grid-template-columns: 1fr; }
+    }
+
     .hidden { display: none !important; }
     input[type="file"] { display: none; }
 
@@ -2969,6 +3160,9 @@
       .auth-actions { grid-template-columns: 1fr; }
       .admin-user-row { grid-template-columns: 1fr; }
       .admin-user-actions { justify-content: stretch; }
+      .codes-head { flex-direction: column; }
+      .codes-list, .code-field-grid { grid-template-columns: 1fr; }
+      .code-actions { justify-content: stretch; }
       button, .file-label { width: 100%; }
       .zoom-toolbar.zoom-vertical button { width: 46px; min-width: 46px; }
       .canvas { padding: 24px 8px 44px; }
@@ -2989,6 +3183,8 @@
         <button class="nav-link" type="button" data-target="miRed">Mi Red</button>
         <button class="nav-link" type="button" data-target="avance">Avance</button>
         <button class="nav-link" type="button" data-target="rangos">Rangos</button>
+        <button class="nav-link hidden" type="button" data-target="codigos" id="btnCodesNav">Códigos</button>
+        <button class="nav-link hidden" type="button" data-target="usuarios" id="btnUsersNav">Usuarios</button>
         <button class="nav-link" type="button" data-target="configuracion">Configuración</button>
         <button class="nav-link auth-user-chip" type="button" id="authUserChip">Sin sesión</button>
         <button class="nav-link" type="button" id="btnLogout">Salir</button>
@@ -3055,6 +3251,17 @@
           <div class="auth-field">
             <label for="registerEmail">Correo electrónico</label>
             <input id="registerEmail" type="email" autocomplete="email" placeholder="correo@ejemplo.com" required />
+          </div>
+
+          <div class="auth-field">
+            <label for="registerCode">Código</label>
+            <input id="registerCode" type="text" autocomplete="off" placeholder="Ej: Código 4Life" required />
+          </div>
+
+          <div class="auth-field">
+            <label for="registerCodePassword">Contraseña de código</label>
+            <input id="registerCodePassword" type="password" autocomplete="new-password" placeholder="Contraseña del código" required />
+            <small>Esta información solo será visible para usuarios administradores.</small>
           </div>
 
           <div class="auth-field">
@@ -3320,6 +3527,70 @@
       </div>
     </section>
 
+    <section class="page-section codes-section hidden" id="codigos" aria-label="Códigos">
+      <div class="page-head">
+        <h2>Códigos</h2>
+        <p>Consulta los códigos registrados por los usuarios. Esta sección solo es visible para usuarios con rol administrador.</p>
+      </div>
+
+      <div class="codes-card">
+        <div class="codes-head">
+          <div>
+            <h3>Usuarios registrados</h3>
+            <p>Busca por nombre, correo, código, rol o estado.</p>
+          </div>
+          <button class="btn-blue" type="button" id="btnRefreshCodes">Actualizar códigos</button>
+        </div>
+
+        <div class="codes-search-box">
+          <label for="codeSearch">Buscar código</label>
+          <input id="codeSearch" type="search" placeholder="Buscar por nombre, código, correo o estado..." autocomplete="off" />
+          <small>Los códigos y contraseñas se cargan desde el perfil guardado en Firestore.</small>
+        </div>
+
+        <div class="codes-summary" id="codesSummary">Cargando códigos...</div>
+        <div class="codes-list" id="codesList">
+          <div class="candidate-empty">No hay códigos cargados.</div>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="page-section users-section hidden" id="usuarios" aria-label="Usuarios">
+      <div class="page-head">
+        <h2>Usuarios</h2>
+        <p>Administra las cuentas registradas. Esta sección solo es visible para usuarios con rol administrador.</p>
+      </div>
+
+      <div class="admin-approval-section hidden" id="adminApprovalSection">
+        <div class="config-head">
+          <div>
+            <h2>Usuarios del sistema</h2>
+            <p>Busca las personas que han creado cuenta, revisa su estado y aprueba, bloquea o elimina usuarios del sistema.</p>
+          </div>
+          <button class="btn-blue" id="btnRefreshUsers" type="button">Actualizar usuarios</button>
+        </div>
+        <div class="report-note" style="margin-bottom: 14px;">
+          Usuario principal configurado: <strong>mikel@local.io</strong>. Los administradores pueden ver usuarios, aprobarlos, bloquearlos y eliminar los datos guardados en Firestore. Solo el usuario principal puede crear o quitar administradores.
+        </div>
+
+        <div class="admin-search-box">
+          <label for="adminUserSearch">Buscar usuario</label>
+          <input id="adminUserSearch" type="search" placeholder="Buscar por nombre, correo, UID o estado..." autocomplete="off" />
+          <small>Ejemplo: pendiente, aprobado, bloqueado, admin, correo, código o nombre.</small>
+        </div>
+
+        <div class="admin-users-summary" id="adminUsersSummary">
+          Cargando usuarios...
+        </div>
+
+        <div class="admin-users-list" id="pendingUsersList">
+          <div class="candidate-empty">No hay usuarios cargados.</div>
+        </div>
+      </div>
+
+    </section>
+
     <section class="page-section config-section" id="configuracion" aria-label="Configuración">
       <div class="config-head">
         <div>
@@ -3337,33 +3608,6 @@
         </div>
       </div>
 
-      <div class="admin-approval-section hidden" id="adminApprovalSection">
-        <div class="config-head">
-          <div>
-            <h2>Usuarios del sistema</h2>
-            <p>Busca las personas que han creado cuenta, revisa su estado y aprueba o bloquea el acceso al sistema.</p>
-          </div>
-          <button class="btn-blue" id="btnRefreshUsers" type="button">Actualizar usuarios</button>
-        </div>
-        <div class="report-note" style="margin-bottom: 14px;">
-          Usuario principal configurado: <strong>mikel@local.io</strong>. Los usuarios se crean primero en Firebase Authentication y aquí se administran por estado en Firestore.
-        </div>
-
-        <div class="admin-search-box">
-          <label for="adminUserSearch">Buscar usuario</label>
-          <input id="adminUserSearch" type="search" placeholder="Buscar por nombre, correo, UID o estado..." autocomplete="off" />
-          <small>Ejemplo: pendiente, aprobado, bloqueado, correo o nombre.</small>
-        </div>
-
-        <div class="admin-users-summary" id="adminUsersSummary">
-          Cargando usuarios...
-        </div>
-
-        <div class="admin-users-list" id="pendingUsersList">
-          <div class="candidate-empty">No hay usuarios cargados.</div>
-        </div>
-      </div>
-
       <div class="config-actions">
         <button class="btn-green" id="btnSaveCloud" type="button">Guardar en Firebase</button>
         <button class="btn-blue" id="btnLoadCloud" type="button">Cargar desde Firebase</button>
@@ -3377,6 +3621,37 @@
       </div>
     </section>
   </main>
+
+  <div class="modal-backdrop" id="codeEditModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3>Editar código</h3>
+      <p>Actualiza el nombre, el código o la contraseña de código del usuario seleccionado.</p>
+      <div class="code-edit-user-box" id="codeEditUserInfo">
+        <strong>Usuario seleccionado</strong>
+        <span>Selecciona un usuario desde la sección Códigos.</span>
+      </div>
+      <form id="codeEditForm">
+        <div class="code-edit-grid">
+          <div class="full">
+            <label for="codeEditName">Nombre</label>
+            <input id="codeEditName" type="text" autocomplete="off" placeholder="Nombre del usuario" required />
+          </div>
+          <div>
+            <label for="codeEditCode">Código</label>
+            <input id="codeEditCode" type="text" autocomplete="off" placeholder="Código" required />
+          </div>
+          <div>
+            <label for="codeEditPassword">Contraseña de código</label>
+            <input id="codeEditPassword" type="text" autocomplete="off" placeholder="Contraseña de código" required />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-light" type="button" id="btnCancelCodeEdit">Cancelar</button>
+          <button class="btn-blue" type="submit" id="btnSaveCodeEdit">Guardar cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <div class="modal-backdrop" id="personModal" role="dialog" aria-modal="true">
     <div class="modal">
@@ -3547,6 +3822,7 @@
       getDoc,
       setDoc,
       updateDoc,
+      deleteDoc,
       collection,
       query,
       where,
@@ -3625,6 +3901,8 @@
     const authPassword = document.getElementById('authPassword');
     const registerName = document.getElementById('registerName');
     const registerEmail = document.getElementById('registerEmail');
+    const registerCode = document.getElementById('registerCode');
+    const registerCodePassword = document.getElementById('registerCodePassword');
     const registerPassword = document.getElementById('registerPassword');
     const authMessage = document.getElementById('authMessage');
     const authUserChip = document.getElementById('authUserChip');
@@ -3634,7 +3912,22 @@
     const pendingUsersList = document.getElementById('pendingUsersList');
     const adminUserSearch = document.getElementById('adminUserSearch');
     const adminUsersSummary = document.getElementById('adminUsersSummary');
+    const btnCodesNav = document.getElementById('btnCodesNav');
+    const btnUsersNav = document.getElementById('btnUsersNav');
+    const codesSection = document.getElementById('codigos');
+    const usersSection = document.getElementById('usuarios');
+    const codeSearch = document.getElementById('codeSearch');
+    const codesSummary = document.getElementById('codesSummary');
+    const codesList = document.getElementById('codesList');
+    const codeEditModal = document.getElementById('codeEditModal');
+    const codeEditForm = document.getElementById('codeEditForm');
+    const codeEditUserInfo = document.getElementById('codeEditUserInfo');
+    const codeEditName = document.getElementById('codeEditName');
+    const codeEditCode = document.getElementById('codeEditCode');
+    const codeEditPassword = document.getElementById('codeEditPassword');
     let adminUsersCache = [];
+    let codesUsersCache = [];
+    let editingCodeUserId = null;
     const personModal = document.getElementById('personModal');
     const summaryModal = document.getElementById('summaryModal');
     const reportModal = document.getElementById('reportModal');
@@ -3945,14 +4238,19 @@
         const status = admin ? 'approved' : (existing.status || extra.status || 'pending');
         const role = admin ? 'admin' : (existing.role || extra.role || 'user');
 
+        const hasNewCodeInfo = Object.prototype.hasOwnProperty.call(extra, 'code') || Object.prototype.hasOwnProperty.call(extra, 'codePassword');
+
         const profile = {
           uid: user.uid,
           name: user.displayName || extra.name || existing.name || user.email?.split('@')[0] || 'Usuario',
           email: user.email || existing.email || '',
+          code: extra.code ?? existing.code ?? '',
+          codePassword: extra.codePassword ?? existing.codePassword ?? '',
           role,
           status,
           createdAt: existing.createdAt || extra.createdAt || new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
+          codeUpdatedAt: hasNewCodeInfo ? new Date().toISOString() : (existing.codeUpdatedAt || '')
         };
 
         await setDoc(profileRef, profile, { merge: true });
@@ -3984,7 +4282,215 @@
       const normalized = String(status || 'pending').toLowerCase();
       if (normalized === 'approved') return 'aprobado';
       if (normalized === 'blocked') return 'bloqueado';
+      if (normalized === 'deleted') return 'eliminado';
       return 'pendiente';
+    }
+
+    function isCurrentApprovedAdmin(profile = currentUserProfile) {
+      return Boolean(profile && profile.role === 'admin' && profile.status === 'approved');
+    }
+
+    function isCurrentMainAdmin() {
+      return Boolean(currentUser && isMainAdminEmail(currentUser.email));
+    }
+
+    function setAdminOnlyNavigation(isAdmin = false) {
+      btnCodesNav?.classList.toggle('hidden', !isAdmin);
+      btnUsersNav?.classList.toggle('hidden', !isAdmin);
+      codesSection?.classList.toggle('hidden', !isAdmin);
+      usersSection?.classList.toggle('hidden', !isAdmin);
+
+      const codesActive = document.getElementById('codigos')?.classList.contains('active');
+      const usersActive = document.getElementById('usuarios')?.classList.contains('active');
+      if (!isAdmin && (codesActive || usersActive)) {
+        setActivePage('inicio');
+      }
+    }
+
+    function normalizeCredentialValue(value = '') {
+      return String(value || '').trim();
+    }
+
+    function renderCodesList() {
+      if (!codesList) return;
+      if (!isCurrentApprovedAdmin()) {
+        codesList.innerHTML = '<div class="candidate-empty">No tienes permisos para ver esta información.</div>';
+        if (codesSummary) codesSummary.textContent = 'Sección disponible solo para usuarios administradores.';
+        return;
+      }
+
+      const term = normalizeSearch(codeSearch?.value || '');
+      const filtered = codesUsersCache.filter(user => {
+        const haystack = normalizeSearch([
+          user.name,
+          user.email,
+          user.uid,
+          user.role,
+          user.status,
+          user.code,
+          getReadableUserStatus(user.status)
+        ].join(' '));
+        return !term || haystack.includes(term);
+      });
+
+      const total = codesUsersCache.length;
+      const withCode = codesUsersCache.filter(user => user.code).length;
+      const admins = codesUsersCache.filter(user => user.role === 'admin').length;
+
+      if (codesSummary) {
+        codesSummary.textContent = `Total usuarios: ${total} · Con código registrado: ${withCode} · Admins: ${admins} · Mostrando: ${filtered.length}`;
+      }
+
+      if (!filtered.length) {
+        codesList.innerHTML = '<div class="candidate-empty">No se encontraron códigos con esa búsqueda.</div>';
+        return;
+      }
+
+      codesList.innerHTML = filtered.map(user => {
+        const status = user.status || 'pending';
+        const role = user.role || 'user';
+        const code = user.code || 'Sin código registrado';
+        const codePassword = user.codePassword || 'Sin contraseña registrada';
+
+        return `
+          <article class="code-user-card">
+            <h4>${escapeHtml(user.name || 'Usuario sin nombre')}</h4>
+            <small>${escapeHtml(user.email || '')}</small>
+            <small>Rol: ${escapeHtml(role)} · Estado: ${getReadableUserStatus(status)}</small>
+            <div class="code-field-grid">
+              <div class="code-field">
+                <span>Código</span>
+                <strong>${escapeHtml(code)}</strong>
+              </div>
+              <div class="code-field">
+                <span>Contraseña de código</span>
+                <strong>${escapeHtml(codePassword)}</strong>
+              </div>
+            </div>
+            <div class="code-actions">
+              <button class="btn-blue edit-code-user" type="button" data-uid="${escapeHtml(user.uid)}">Editar datos</button>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      codesList.querySelectorAll('.edit-code-user').forEach(button => {
+        button.addEventListener('click', () => openCodeEditModal(button.dataset.uid));
+      });
+    }
+
+    function openCodeEditModal(uid) {
+      if (!isCurrentApprovedAdmin()) {
+        alert('No tienes permisos para editar códigos.');
+        return;
+      }
+
+      const user = codesUsersCache.find(item => item.uid === uid);
+      if (!user) {
+        alert('No se encontró el usuario seleccionado. Actualiza la lista e intenta de nuevo.');
+        return;
+      }
+
+      editingCodeUserId = uid;
+      if (codeEditUserInfo) {
+        codeEditUserInfo.innerHTML = `
+          <strong>${escapeHtml(user.name || 'Usuario sin nombre')}</strong>
+          <span>${escapeHtml(user.email || '')} · Rol: ${escapeHtml(user.role || 'user')} · Estado: ${getReadableUserStatus(user.status)}</span>
+        `;
+      }
+      if (codeEditName) codeEditName.value = user.name || '';
+      if (codeEditCode) codeEditCode.value = user.code || '';
+      if (codeEditPassword) codeEditPassword.value = user.codePassword || '';
+      codeEditModal?.classList.add('active');
+      setTimeout(() => codeEditName?.focus(), 60);
+    }
+
+    function closeCodeEditModal() {
+      editingCodeUserId = null;
+      codeEditForm?.reset();
+      codeEditModal?.classList.remove('active');
+    }
+
+    async function saveCodeEdit() {
+      if (!editingCodeUserId) return;
+      if (!isCurrentApprovedAdmin()) {
+        alert('No tienes permisos para editar códigos.');
+        return;
+      }
+
+      const name = normalizeCredentialValue(codeEditName?.value || '');
+      const code = normalizeCredentialValue(codeEditCode?.value || '');
+      const codePassword = normalizeCredentialValue(codeEditPassword?.value || '');
+
+      if (!name || !code || !codePassword) {
+        alert('Completa nombre, código y contraseña de código.');
+        return;
+      }
+
+      try {
+        await updateDoc(getUserProfileRef(editingCodeUserId), {
+          name,
+          code,
+          codePassword,
+          codeUpdatedBy: currentUser.uid,
+          codeUpdatedAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        });
+
+        const localUser = codesUsersCache.find(item => item.uid === editingCodeUserId);
+        if (localUser) {
+          localUser.name = name;
+          localUser.code = code;
+          localUser.codePassword = codePassword;
+          localUser.updatedAt = new Date().toISOString();
+        }
+
+        if (currentUserProfile?.uid === editingCodeUserId) {
+          currentUserProfile.name = name;
+          currentUserProfile.code = code;
+          currentUserProfile.codePassword = codePassword;
+          updateLeaderLabels(name);
+        }
+
+        closeCodeEditModal();
+        renderCodesList();
+        await loadPendingUsers();
+        await loadCodesUsers();
+        alert('Datos del código actualizados correctamente.');
+      } catch (error) {
+        console.error('No se pudo actualizar el código:', error);
+        alert('No se pudo actualizar el código. Revisa las reglas de Firestore o la conexión.');
+      }
+    }
+
+    async function loadCodesUsers() {
+      if (!currentUser || !isCurrentApprovedAdmin()) return;
+      if (codesList) codesList.innerHTML = '<div class="candidate-empty">Cargando códigos registrados...</div>';
+      if (codesSummary) codesSummary.textContent = 'Cargando códigos...';
+
+      try {
+        const snapshot = await getDocs(collection(db, USERS_COLLECTION));
+        codesUsersCache = snapshot.docs.map(docSnap => {
+          const user = docSnap.data() || {};
+          return {
+            uid: user.uid || docSnap.id,
+            name: user.name || 'Usuario sin nombre',
+            email: user.email || '',
+            role: user.role || 'user',
+            status: user.status || 'pending',
+            code: user.code || '',
+            codePassword: user.codePassword || '',
+            createdAt: user.createdAt || '',
+            updatedAt: user.updatedAt || ''
+          };
+        }).sort((a, b) => String(a.name || a.email).localeCompare(String(b.name || b.email)));
+
+        renderCodesList();
+      } catch (error) {
+        console.error('No se pudieron cargar los códigos:', error);
+        if (codesList) codesList.innerHTML = '<div class="candidate-empty">No se pudieron cargar los códigos. Revisa las reglas de Firestore.</div>';
+        if (codesSummary) codesSummary.textContent = 'Error cargando códigos.';
+      }
     }
 
     function renderAdminUsersList() {
@@ -4021,8 +4527,14 @@
         const status = user.status || 'pending';
         const role = user.role || 'user';
         const isCurrentAdmin = user.uid === currentUser?.uid;
-        const canApprove = status !== 'approved' && !isCurrentAdmin;
-        const canBlock = status !== 'blocked' && !isCurrentAdmin;
+        const mainAdmin = isCurrentMainAdmin();
+        const targetIsMainAdmin = isMainAdminEmail(user.email);
+        const canManageTarget = !isCurrentAdmin && !targetIsMainAdmin && (mainAdmin || role !== 'admin');
+        const canApprove = status !== 'approved' && canManageTarget;
+        const canBlock = status !== 'blocked' && canManageTarget;
+        const canDelete = canManageTarget;
+        const canMakeAdmin = mainAdmin && role !== 'admin' && !isCurrentAdmin && !targetIsMainAdmin;
+        const canRemoveAdmin = mainAdmin && role === 'admin' && !isCurrentAdmin && !targetIsMainAdmin;
 
         return `
           <div class="admin-user-row">
@@ -4031,11 +4543,15 @@
               <small>${escapeHtml(user.email || '')}</small>
               <small>UID: ${escapeHtml(user.uid || '')}</small>
               <small>Rol: ${escapeHtml(role)} · Creado en Firebase Authentication</small>
+              <small>Código: ${escapeHtml(user.code || 'Sin código registrado')}</small>
               <span class="admin-status-badge ${escapeHtml(status)}">${getReadableUserStatus(status)}</span>
             </div>
             <div class="admin-user-actions">
               ${canApprove ? `<button class="btn-green approve-user" type="button" data-uid="${escapeHtml(user.uid)}">Aprobar</button>` : ''}
               ${canBlock ? `<button class="btn-red reject-user" type="button" data-uid="${escapeHtml(user.uid)}">Bloquear</button>` : ''}
+              ${canMakeAdmin ? `<button class="btn-blue make-admin-user" type="button" data-uid="${escapeHtml(user.uid)}">Hacer admin</button>` : ''}
+              ${canRemoveAdmin ? `<button class="btn-light remove-admin-user" type="button" data-uid="${escapeHtml(user.uid)}">Quitar admin</button>` : ''}
+              ${canDelete ? `<button class="btn-red delete-user" type="button" data-uid="${escapeHtml(user.uid)}" data-name="${escapeHtml(user.name || user.email || 'usuario')}">Eliminar</button>` : ''}
             </div>
           </div>
         `;
@@ -4047,6 +4563,18 @@
 
       pendingUsersList.querySelectorAll('.reject-user').forEach(button => {
         button.addEventListener('click', () => updateUserApproval(button.dataset.uid, 'blocked'));
+      });
+
+      pendingUsersList.querySelectorAll('.make-admin-user').forEach(button => {
+        button.addEventListener('click', () => updateUserRole(button.dataset.uid, 'admin'));
+      });
+
+      pendingUsersList.querySelectorAll('.remove-admin-user').forEach(button => {
+        button.addEventListener('click', () => updateUserRole(button.dataset.uid, 'user'));
+      });
+
+      pendingUsersList.querySelectorAll('.delete-user').forEach(button => {
+        button.addEventListener('click', () => deleteSystemUser(button.dataset.uid, button.dataset.name));
       });
     }
 
@@ -4069,6 +4597,8 @@
             email: user.email || '',
             role: user.role || 'user',
             status: user.status || 'pending',
+            code: user.code || '',
+            codePassword: user.codePassword || '',
             createdAt: user.createdAt || '',
             updatedAt: user.updatedAt || ''
           };
@@ -4110,9 +4640,105 @@
       await loadPendingUsers();
     }
 
+    async function deleteSystemUser(uid, displayName = 'este usuario') {
+      if (!currentUser) return;
+      const adminProfile = await getUserProfile(currentUser);
+      if (!adminProfile || adminProfile.role !== 'admin' || adminProfile.status !== 'approved') {
+        alert('No tienes permisos de administrador para eliminar usuarios.');
+        return;
+      }
+
+      const target = adminUsersCache.find(user => user.uid === uid) || codesUsersCache.find(user => user.uid === uid);
+      if (!target) {
+        alert('No se encontró el usuario seleccionado. Actualiza la lista e intenta de nuevo.');
+        return;
+      }
+
+      const mainAdmin = isCurrentMainAdmin();
+      const targetIsMainAdmin = isMainAdminEmail(target.email);
+      const isSelf = uid === currentUser.uid;
+      const targetIsAdmin = target.role === 'admin';
+
+      if (isSelf || targetIsMainAdmin) {
+        alert('No puedes eliminar tu propio usuario ni el usuario principal del sistema.');
+        return;
+      }
+
+      if (targetIsAdmin && !mainAdmin) {
+        alert('Solo el usuario principal puede eliminar otro administrador.');
+        return;
+      }
+
+      const readableName = target.name || target.email || displayName || 'este usuario';
+      const confirmed = confirm(`Vas a eliminar a ${readableName} del sistema.
+
+Esta acción eliminará de Firestore:
+- El perfil del usuario
+- Sus datos de código y contraseña de código
+- Todas las redes guardadas de ese usuario
+
+La cuenta de Firebase Authentication no se eliminará.
+
+Esta acción no se puede deshacer.
+
+¿Confirmas esta acción?`);
+      if (!confirmed) return;
+
+      try {
+        const userNetworksRef = collection(db, USERS_COLLECTION, uid, 'redes');
+        const userNetworksSnap = await getDocs(userNetworksRef);
+        const deleteNetworkPromises = userNetworksSnap.docs.map(networkDoc => deleteDoc(networkDoc.ref));
+        await Promise.all(deleteNetworkPromises);
+        await deleteDoc(getUserProfileRef(uid));
+
+        alert('Usuario eliminado correctamente de Firestore. La cuenta en Firebase Authentication queda intacta.');
+        adminUsersCache = adminUsersCache.filter(user => user.uid !== uid);
+        codesUsersCache = codesUsersCache.filter(user => user.uid !== uid);
+        renderAdminUsersList();
+        renderCodesList();
+        await loadPendingUsers();
+        await loadCodesUsers();
+      } catch (error) {
+        console.error('No se pudo eliminar el usuario de Firestore:', error);
+        alert('No se pudo eliminar el usuario de Firestore. Revisa las reglas de Firestore y que el usuario actual sea admin aprobado.');
+      }
+    }
+
+    async function updateUserRole(uid, role) {
+      if (!currentUser) return;
+      if (!isCurrentMainAdmin()) {
+        alert('Solo el usuario principal puede crear o quitar administradores.');
+        return;
+      }
+
+      const updatePayload = {
+        role,
+        updatedAt: new Date().toISOString(),
+        roleUpdatedBy: currentUser.uid,
+        roleUpdatedAt: new Date().toISOString()
+      };
+
+      if (role === 'admin') {
+        updatePayload.status = 'approved';
+        updatePayload.approvedBy = currentUser.uid;
+        updatePayload.approvedAt = new Date().toISOString();
+      }
+
+      await updateDoc(getUserProfileRef(uid), updatePayload);
+
+      alert(role === 'admin'
+        ? 'Usuario convertido en administrador. Ahora podrá ver las secciones Usuarios y Códigos.'
+        : 'Rol de administrador retirado. El usuario seguirá como usuario normal.'
+      );
+
+      await loadPendingUsers();
+      await loadCodesUsers();
+    }
+
     async function setAuthUI(user) {
       currentUser = user || null;
       adminApprovalSection?.classList.add('hidden');
+      setAdminOnlyNavigation(false);
 
       if (currentUser) {
         const profile = await ensureUserProfile(currentUser);
@@ -4145,14 +4771,17 @@
         pendingPanel?.classList.add('hidden');
 
         const label = getCurrentUserDisplayName(profile, currentUser);
+        const isAdminUser = isCurrentApprovedAdmin(profile);
+        setAdminOnlyNavigation(isAdminUser);
         forceAuthenticatedLeaderName();
         if (authUserChip) authUserChip.textContent = profile.role === 'admin' ? `${label} · Admin` : label;
         if (userInfoText) userInfoText.textContent = `Sesión activa: ${label} · Estado: aprobado · Rol: ${profile.role}`;
         updateCloudStatus('Sesión aprobada. Cada cambio se guardará en el espacio privado de este usuario.', 'ok');
 
-        if (profile.role === 'admin') {
+        if (isAdminUser) {
           adminApprovalSection?.classList.remove('hidden');
           await loadPendingUsers();
+          await loadCodesUsers();
         }
       } else {
         currentUserProfile = null;
@@ -4193,7 +4822,7 @@
       updateAuthMessage('Ingreso correcto.', 'ok');
     }
 
-    async function handleRegister(name, email, password) {
+    async function handleRegister(name, email, password, code, codePassword) {
       updateAuthMessage('Creando cuenta...');
       const credential = await createUserWithEmailAndPassword(auth, email, password);
 
@@ -4204,6 +4833,8 @@
       const admin = isMainAdminEmail(credential.user.email);
       const profile = await ensureUserProfile(credential.user, {
         name,
+        code: normalizeCredentialValue(code),
+        codePassword: normalizeCredentialValue(codePassword),
         role: admin ? 'admin' : 'user',
         status: admin ? 'approved' : 'pending',
         createdAt: new Date().toISOString()
@@ -6238,6 +6869,10 @@
     }
 
     function setActivePage(targetId) {
+      if ((targetId === 'codigos' || targetId === 'usuarios') && !isCurrentApprovedAdmin()) {
+        targetId = 'inicio';
+      }
+
       const pages = document.querySelectorAll('.page-section');
       pages.forEach(page => page.classList.toggle('active', page.id === targetId));
 
@@ -6250,6 +6885,14 @@
         renderAdvanceRankWatch();
       }
 
+      if (targetId === 'codigos') {
+        loadCodesUsers();
+      }
+
+      if (targetId === 'usuarios') {
+        loadPendingUsers();
+      }
+
       if (targetId !== 'miRed') {
         closeRankInspector();
       }
@@ -6258,7 +6901,10 @@
     }
 
     navLinks.forEach(link => {
-      link.addEventListener('click', () => setActivePage(link.dataset.target));
+      link.addEventListener('click', () => {
+        if (!link.dataset.target) return;
+        setActivePage(link.dataset.target);
+      });
     });
 
     document.querySelectorAll('[data-page-target]').forEach(button => {
@@ -6292,7 +6938,13 @@
     registerForm?.addEventListener('submit', async (event) => {
       event.preventDefault();
       try {
-        await handleRegister(registerName.value.trim(), registerEmail.value.trim(), registerPassword.value);
+        await handleRegister(
+          registerName.value.trim(),
+          registerEmail.value.trim(),
+          registerPassword.value,
+          registerCode.value.trim(),
+          registerCodePassword.value.trim()
+        );
       } catch (error) {
         console.error(error);
         updateAuthMessage(getAuthErrorMessage(error), 'error');
@@ -6306,7 +6958,14 @@
     document.getElementById('btnLogoutConfig')?.addEventListener('click', handleLogout);
     document.getElementById('btnLogoutPending')?.addEventListener('click', handleLogout);
     document.getElementById('btnRefreshUsers')?.addEventListener('click', loadPendingUsers);
+    document.getElementById('btnRefreshCodes')?.addEventListener('click', loadCodesUsers);
     adminUserSearch?.addEventListener('input', renderAdminUsersList);
+    codeSearch?.addEventListener('input', renderCodesList);
+    codeEditForm?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      await saveCodeEdit();
+    });
+    document.getElementById('btnCancelCodeEdit')?.addEventListener('click', closeCodeEditModal);
 
     document.getElementById('btnSaveCloud')?.addEventListener('click', () => saveToFirebase(true));
     document.getElementById('btnLoadCloud')?.addEventListener('click', () => loadFromFirebase(true));
