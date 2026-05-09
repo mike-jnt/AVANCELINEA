@@ -3099,8 +3099,8 @@
     <section class="page-section active" id="inicio" aria-label="Inicio">
       <div class="home-hero">
         <span class="eyebrow">Panel principal</span>
-        <h2>Jean Carlo</h2>
-        <p>Este es tu espacio principal para visualizar el avance de tu organización, construir tu estructura por niveles y revisar si vas camino a Constructor o Constructor Elite.</p>
+        <h2 id="homeLeaderName">Usuario actual</h2>
+        <p id="homeLeaderIntro">Este es tu espacio principal para visualizar el avance de tu organización, construir tu estructura por niveles y revisar si vas camino a Constructor o Constructor Elite.</p>
         <div class="home-actions">
           <button class="btn-gold" type="button" data-page-target="miRed">Ver mi red</button>
           <button class="btn-blue" type="button" id="homeAddDirect">Agregar directo</button>
@@ -3109,7 +3109,7 @@
       </div>
 
       <div class="home-grid" aria-label="Resumen rápido">
-        <div class="home-card"><span>Total afiliados</span><strong id="homeTotal">0</strong><small>Personas registradas debajo de Jean Carlo.</small></div>
+        <div class="home-card"><span>Total afiliados</span><strong id="homeTotal">0</strong><small id="homeTotalText">Personas registradas debajo del usuario principal.</small></div>
         <div class="home-card"><span>Códigos activos</span><strong id="homeActive">0</strong><small>Personas con puntos registrados.</small></div>
         <div class="home-card"><span>Puntos organización</span><strong id="homePoints">100</strong><small>Suma de puntos propios y estructura.</small></div>
         <div class="home-card"><span>Estado de rango</span><strong id="homeRankStatus">Inicio</strong><small>Calculado con los datos registrados.</small></div>
@@ -3119,7 +3119,7 @@
     <section class="page-section" id="miRed" aria-label="Mi Red">
       <div class="page-head">
         <h2>Mi Red</h2>
-        <p>Dibuja tu estructura agregando personas debajo de cada líder. Los directos de Jean Carlo son nivel 1, los de ellos nivel 2, los siguientes nivel 3, y si la red crece se crearán más líneas automáticamente.</p>
+        <p id="miRedDescription">Dibuja tu estructura agregando personas debajo de cada líder. Los directos del usuario principal son nivel 1, los de ellos nivel 2, los siguientes nivel 3, y si la red crece se crearán más líneas automáticamente.</p>
       </div>
       <section class="tree-wrap">
         <div class="tree-head">
@@ -3576,6 +3576,7 @@
     const db = getFirestore(firebaseApp);
     const auth = getAuth(firebaseApp);
     let currentUser = null;
+    let currentUserProfile = null;
     analyticsIsSupported().then((supported) => {
       if (supported) getAnalytics(firebaseApp);
     }).catch(() => {});
@@ -3591,14 +3592,14 @@
 
     const initialData = {
       id: crypto.randomUUID(),
-      name: 'Jean Carlo',
+      name: 'Usuario principal',
       points: 100,
       collapsed: false,
       children: []
     };
 
     let data = loadData();
-    if (data.name === 'Yo / Líder principal') data.name = 'Jean Carlo';
+    if (['Yo / Líder principal', 'Jean Carlo'].includes(data.name)) data.name = 'Usuario principal';
     let selectedId = data.id;
     let focusedRootId = data.id;
     let personModalMode = 'add';
@@ -3787,8 +3788,10 @@
         data = normalizeNode(payload.data);
         selectedId = data.id;
         focusedRootId = data.id;
+        forceAuthenticatedLeaderName();
         localStorage.setItem(getCurrentStorageKey(), JSON.stringify(data));
         render();
+        forceAuthenticatedLeaderName();
         isLoadingFromCloud = false;
 
         updateCloudStatus('Red cargada desde Firebase correctamente.', 'ok');
@@ -3801,16 +3804,73 @@
           data = loadData();
           selectedId = data.id;
           focusedRootId = data.id;
-          requestAnimationFrame(() => prepareAuthenticatedView());
+          requestAnimationFrame(() => prepareAuthenticatedView(currentUserProfile));
         }
         if (showAlert) alert('No se pudo cargar desde Firebase. Revisa las reglas de Firestore, Auth o la conexión.');
       }
     }
 
+    function getCurrentUserDisplayName(profile = currentUserProfile, user = currentUser) {
+      const rawName = profile?.name || user?.displayName || user?.email?.split('@')[0] || 'Usuario principal';
+      return String(rawName).trim() || 'Usuario principal';
+    }
+
+    function shouldAutoReplaceRootName(name = '') {
+      const normalized = normalizeSearch(name);
+      return !normalized || [
+        'yo / lider principal',
+        'yo / lider principal',
+        'jean carlo',
+        'usuario principal'
+      ].includes(normalized);
+    }
+
+    function syncRootNameWithCurrentUser(profile = currentUserProfile) {
+      if (!currentUser || !data) return;
+      const displayName = getCurrentUserDisplayName(profile, currentUser);
+
+      // Regla principal: el líder raíz y el título del inicio siempre deben
+      // coincidir con el usuario autenticado, aunque la red guardada tenga
+      // un nombre antiguo como Jean Carlo u otro usuario anterior.
+      data.name = displayName;
+
+      updateLeaderLabels(displayName);
+    }
+
+    function updateLeaderLabels(name = '') {
+      const leaderName = String(name || data?.name || getCurrentUserDisplayName() || 'Usuario principal').trim() || 'Usuario principal';
+      const homeLeaderName = document.getElementById('homeLeaderName');
+      const homeLeaderIntro = document.getElementById('homeLeaderIntro');
+      const homeTotalText = document.getElementById('homeTotalText');
+      const miRedDescription = document.getElementById('miRedDescription');
+
+      // Este título nunca debe depender del nombre que venga guardado dentro de la red.
+      // Siempre se pinta con el usuario autenticado actual.
+      if (homeLeaderName) {
+        homeLeaderName.textContent = leaderName;
+        homeLeaderName.setAttribute('data-current-user-name', leaderName);
+      }
+      if (homeLeaderIntro) homeLeaderIntro.textContent = `Este es tu espacio principal para visualizar el avance de tu organización, construir tu estructura por niveles y revisar si vas camino a Constructor o Constructor Elite.`;
+      if (homeTotalText) homeTotalText.textContent = `Personas registradas debajo de ${leaderName}.`;
+      if (miRedDescription) miRedDescription.textContent = `Dibuja tu estructura agregando personas debajo de cada líder. Los directos de ${leaderName} son nivel 1, los de ellos nivel 2, los siguientes nivel 3, y si la red crece se crearán más líneas automáticamente.`;
+    }
+
+    function forceAuthenticatedLeaderName() {
+      if (!currentUser) {
+        updateLeaderLabels('Usuario principal');
+        return 'Usuario principal';
+      }
+
+      const leaderName = getCurrentUserDisplayName(currentUserProfile, currentUser);
+      if (data) data.name = leaderName;
+      updateLeaderLabels(leaderName);
+      return leaderName;
+    }
+
     function createInitialDataForUser() {
       return {
         id: crypto.randomUUID(),
-        name: currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Usuario principal',
+        name: getCurrentUserDisplayName(),
         points: 100,
         collapsed: false,
         children: []
@@ -4056,6 +4116,7 @@
 
       if (currentUser) {
         const profile = await ensureUserProfile(currentUser);
+        currentUserProfile = profile;
 
         if (!profile) {
           document.body.classList.add('auth-screen');
@@ -4083,7 +4144,8 @@
         document.querySelector('.auth-form-pro')?.classList.remove('verification-required');
         pendingPanel?.classList.add('hidden');
 
-        const label = profile.name || currentUser.displayName || currentUser.email || 'Usuario';
+        const label = getCurrentUserDisplayName(profile, currentUser);
+        forceAuthenticatedLeaderName();
         if (authUserChip) authUserChip.textContent = profile.role === 'admin' ? `${label} · Admin` : label;
         if (userInfoText) userInfoText.textContent = `Sesión activa: ${label} · Estado: aprobado · Rol: ${profile.role}`;
         updateCloudStatus('Sesión aprobada. Cada cambio se guardará en el espacio privado de este usuario.', 'ok');
@@ -4093,12 +4155,14 @@
           await loadPendingUsers();
         }
       } else {
+        currentUserProfile = null;
         document.body.classList.add('auth-screen');
         appShell?.classList.add('locked');
         authGate?.classList.add('active');
         document.querySelector('.auth-form-pro')?.classList.remove('verification-required');
         pendingPanel?.classList.add('hidden');
 
+        updateLeaderLabels('Usuario principal');
         if (authUserChip) authUserChip.textContent = 'Sin sesión';
         if (userInfoText) userInfoText.textContent = 'Inicia sesión para guardar y cargar una red privada.';
         updateCloudStatus('Inicia sesión para activar Firebase por usuario.', 'info');
@@ -4679,6 +4743,7 @@
     }
 
     function render() {
+      if (currentUser) forceAuthenticatedLeaderName();
       const search = normalizeSearch(searchInput.value);
       const focusId = pendingSearchFocusId;
       const searchAutoFitDepth = pendingSearchAutoFitDepth;
@@ -4708,6 +4773,7 @@
       updateRankProgress();
       updateAdvanceCandidates();
       updateRankInspector();
+      if (currentUser) forceAuthenticatedLeaderName();
       saveData();
     }
 
@@ -6142,7 +6208,9 @@
 
     window.addEventListener('resize', () => requestAnimationFrame(updateZoomStageSize));
 
-    function prepareAuthenticatedView() {
+    function prepareAuthenticatedView(profile = currentUserProfile) {
+      currentUserProfile = profile || currentUserProfile;
+      forceAuthenticatedLeaderName();
       closePersonModal();
       closeConfirm();
       closeSummaryModal();
@@ -6161,6 +6229,7 @@
       setActivePage('inicio');
       setNetworkZoom(1, false);
       render();
+      forceAuthenticatedLeaderName();
 
       requestAnimationFrame(() => {
         setNetworkZoom(1, false);
@@ -6265,6 +6334,7 @@
           data = imported;
           selectedId = data.id;
           focusedRootId = data.id;
+          syncRootNameWithCurrentUser();
           render();
         } catch (error) {
           alert('No se pudo importar el archivo. Verifica que sea una red exportada desde esta página.');
@@ -6322,6 +6392,28 @@
       }
     });
 
+    // Refuerzo final: si alguna carga local/Firebase vuelve a pintar un nombre viejo,
+    // el inicio se corrige automáticamente con el usuario que tiene la sesión activa.
+    const homeLeaderNameObserver = new MutationObserver(() => {
+      if (!currentUser) return;
+      const expectedName = getCurrentUserDisplayName(currentUserProfile, currentUser);
+      const currentText = document.getElementById('homeLeaderName')?.textContent?.trim();
+      if (currentText && currentText !== expectedName) {
+        forceAuthenticatedLeaderName();
+      }
+    });
+
+    const observedHomeLeaderName = document.getElementById('homeLeaderName');
+    if (observedHomeLeaderName) {
+      homeLeaderNameObserver.observe(observedHomeLeaderName, { childList: true, characterData: true, subtree: true });
+    }
+
+    setInterval(() => {
+      if (currentUser && !document.body.classList.contains('auth-screen')) {
+        forceAuthenticatedLeaderName();
+      }
+    }, 1200);
+
     onAuthStateChanged(auth, async (user) => {
       try {
         await setAuthUI(user);
@@ -6334,14 +6426,14 @@
             data = loadData();
             selectedId = data.id;
             focusedRootId = data.id;
-            prepareAuthenticatedView();
+            prepareAuthenticatedView(profile);
             isLoadingFromCloud = false;
 
             await loadFromFirebase(false);
 
             // Después de cargar desde Firebase, vuelve a preparar la vista para que
             // el sistema siempre entre limpio, centrado y con el inicio visible.
-            prepareAuthenticatedView();
+            prepareAuthenticatedView(profile);
           } else {
             data = structuredClone(initialData);
             selectedId = data.id;
