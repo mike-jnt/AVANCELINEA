@@ -3562,6 +3562,7 @@
         <p>Administra las cuentas registradas. Esta sección solo es visible para usuarios con rol administrador.</p>
       </div>
 
+      <div id="adminPanelUsersMount">
       <div class="admin-approval-section hidden" id="adminApprovalSection">
         <div class="config-head">
           <div>
@@ -3588,6 +3589,7 @@
           <div class="candidate-empty">No hay usuarios cargados.</div>
         </div>
       </div>
+      </div>
 
     </section>
 
@@ -3607,6 +3609,8 @@
           <button class="btn-light" id="btnLogoutConfig" type="button">Cerrar sesión</button>
         </div>
       </div>
+
+      <div id="adminPanelConfigMount"></div>
 
       <div class="config-actions">
         <button class="btn-green" id="btnSaveCloud" type="button">Guardar en Firebase</button>
@@ -3909,6 +3913,8 @@
     const userInfoText = document.getElementById('userInfoText');
     const pendingPanel = document.getElementById('pendingPanel');
     const adminApprovalSection = document.getElementById('adminApprovalSection');
+    const adminPanelConfigMount = document.getElementById('adminPanelConfigMount');
+    const adminPanelUsersMount = document.getElementById('adminPanelUsersMount');
     const pendingUsersList = document.getElementById('pendingUsersList');
     const adminUserSearch = document.getElementById('adminUserSearch');
     const adminUsersSummary = document.getElementById('adminUsersSummary');
@@ -4213,7 +4219,8 @@
     }
 
     function isMainAdminEmail(email = '') {
-      return ADMIN_EMAILS.map(item => item.toLowerCase()).includes(String(email || '').toLowerCase());
+      const normalizedEmail = String(email || '').trim().toLowerCase();
+      return ADMIN_EMAILS.map(item => String(item || '').trim().toLowerCase()).includes(normalizedEmail);
     }
 
     async function getUserProfile(user) {
@@ -4304,6 +4311,14 @@
       const usersActive = document.getElementById('usuarios')?.classList.contains('active');
       if (!isAdmin && (codesActive || usersActive)) {
         setActivePage('inicio');
+      }
+    }
+
+    function placeAdminPanel(targetPage = 'usuarios') {
+      if (!adminApprovalSection) return;
+      const targetMount = targetPage === 'configuracion' ? adminPanelConfigMount : adminPanelUsersMount;
+      if (targetMount && !targetMount.contains(adminApprovalSection)) {
+        targetMount.appendChild(adminApprovalSection);
       }
     }
 
@@ -4822,6 +4837,8 @@ Esta acción no se puede deshacer.
         updateCloudStatus('Sesión aprobada. Cada cambio se guardará en el espacio privado de este usuario.', 'ok');
 
         if (isAdminUser) {
+          const activePageId = document.querySelector('.page-section.active')?.id || 'inicio';
+          placeAdminPanel(activePageId === 'configuracion' ? 'configuracion' : 'usuarios');
           adminApprovalSection?.classList.remove('hidden');
           await loadPendingUsers();
           await loadCodesUsers();
@@ -6928,11 +6945,19 @@ Esta acción no se puede deshacer.
         renderAdvanceRankWatch();
       }
 
+      if (targetId === 'configuracion' && isCurrentApprovedAdmin()) {
+        placeAdminPanel('configuracion');
+        adminApprovalSection?.classList.remove('hidden');
+        loadPendingUsers();
+      }
+
       if (targetId === 'codigos') {
         loadCodesUsers();
       }
 
       if (targetId === 'usuarios') {
+        placeAdminPanel('usuarios');
+        adminApprovalSection?.classList.remove('hidden');
         loadPendingUsers();
       }
 
