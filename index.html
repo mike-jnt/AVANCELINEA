@@ -3265,8 +3265,9 @@
           </div>
 
           <div class="auth-field">
-            <label for="registerPassword">Contraseña</label>
+            <label for="registerPassword">Contraseña de acceso</label>
             <input id="registerPassword" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres" required />
+            <small>Esta contraseña se crea en Firebase Authentication. Por seguridad no se guarda visible en Firestore.</small>
           </div>
 
           <div class="auth-actions">
@@ -3572,7 +3573,7 @@
           <button class="btn-blue" id="btnRefreshUsers" type="button">Actualizar usuarios</button>
         </div>
         <div class="report-note" style="margin-bottom: 14px;">
-          Usuario principal configurado: <strong>mikel@local.io</strong>. Este usuario queda como administrador autorizado por defecto. Todo usuario que tenga rol <strong>admin</strong> y estado <strong>aprobado</strong> puede ver usuarios, ver códigos, aprobar, bloquear, eliminar datos de Firestore y convertir a otros usuarios en administradores. El usuario principal no puede ser bloqueado, eliminado ni degradado.
+          Usuario principal configurado: <strong>mikel@local.io</strong>. Este usuario queda como administrador autorizado por defecto. Todo usuario que tenga rol <strong>admin</strong> y estado <strong>aprobado</strong> puede ver usuarios, ver códigos, aprobar, bloquear, eliminar datos de Firestore y convertir a otros usuarios en administradores. El usuario principal no puede ser bloqueado, eliminado ni degradado. Por seguridad, la contraseña de acceso de Firebase Authentication no se puede ver; si alguien pierde el acceso, usa el botón de recuperación.
         </div>
 
         <div class="admin-search-box">
@@ -3838,6 +3839,7 @@
       onAuthStateChanged,
       createUserWithEmailAndPassword,
       signInWithEmailAndPassword,
+      sendPasswordResetEmail,
       signOut,
       updateProfile
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
@@ -4245,19 +4247,50 @@
         const status = admin ? 'approved' : (existing.status || extra.status || 'pending');
         const role = admin ? 'admin' : (existing.role || extra.role || 'user');
 
+        const now = new Date().toISOString();
         const hasNewCodeInfo = Object.prototype.hasOwnProperty.call(extra, 'code') || Object.prototype.hasOwnProperty.call(extra, 'codePassword');
+        const isFreshRegistration = Boolean(extra.registeredFromForm);
+        const profileName = normalizeCredentialValue(extra.name || user.displayName || existing.name || user.email?.split('@')[0] || 'Usuario');
+        const profileEmail = normalizeCredentialValue(user.email || extra.email || existing.email || '');
+        const profileCode = normalizeCredentialValue(extra.code ?? existing.code ?? existing.registrationData?.code ?? '');
+        const profileCodePassword = normalizeCredentialValue(extra.codePassword ?? existing.codePassword ?? existing.registrationData?.codePassword ?? '');
+        const createdAt = existing.createdAt || extra.createdAt || now;
+
+        const registrationData = (isFreshRegistration || hasNewCodeInfo)
+          ? {
+              uid: user.uid,
+              name: profileName,
+              email: profileEmail,
+              emailLower: profileEmail.toLowerCase(),
+              code: profileCode,
+              codePassword: profileCodePassword,
+              authProvider: 'password',
+              createdInAuthentication: true,
+              accessPasswordSaved: false,
+              accessPasswordNote: 'La contraseña de acceso la administra Firebase Authentication y no se guarda visible en Firestore.',
+              registeredAt: extra.registeredAt || createdAt,
+              savedAt: now
+            }
+          : (existing.registrationData || null);
 
         const profile = {
           uid: user.uid,
-          name: user.displayName || extra.name || existing.name || user.email?.split('@')[0] || 'Usuario',
-          email: user.email || existing.email || '',
-          code: extra.code ?? existing.code ?? '',
-          codePassword: extra.codePassword ?? existing.codePassword ?? '',
+          name: profileName,
+          email: profileEmail,
+          emailLower: profileEmail.toLowerCase(),
+          code: profileCode,
+          codePassword: profileCodePassword,
           role,
           status,
-          createdAt: existing.createdAt || extra.createdAt || new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          codeUpdatedAt: hasNewCodeInfo ? new Date().toISOString() : (existing.codeUpdatedAt || '')
+          createdInAuthentication: true,
+          authProvider: 'password',
+          registeredFromForm: existing.registeredFromForm || isFreshRegistration,
+          accessPasswordSaved: false,
+          accessPasswordStatus: 'managed_by_firebase_auth',
+          createdAt,
+          updatedAt: now,
+          codeUpdatedAt: hasNewCodeInfo ? now : (existing.codeUpdatedAt || ''),
+          registrationData
         };
 
         await setDoc(profileRef, profile, { merge: true });
@@ -4493,8 +4526,8 @@
             email: user.email || '',
             role: user.role || 'user',
             status: user.status || 'pending',
-            code: user.code || '',
-            codePassword: user.codePassword || '',
+            code: user.code || user.registrationData?.code || '',
+            codePassword: user.codePassword || user.registrationData?.codePassword || '',
             createdAt: user.createdAt || '',
             updatedAt: user.updatedAt || ''
           };
@@ -4565,6 +4598,8 @@
               <small>UID: ${escapeHtml(user.uid || '')}</small>
               <small>Rol: ${escapeHtml(role)} · Creado en Firebase Authentication</small>
               <small>Código: ${escapeHtml(user.code || 'Sin código registrado')}</small>
+              <small>Contraseña de código: ${escapeHtml(user.codePassword || 'Sin contraseña registrada')}</small>
+              <small>Contraseña de acceso: protegida por Firebase, no visible</small>
               <span class="admin-status-badge ${escapeHtml(status)}">${getReadableUserStatus(status)}</span>
             </div>
             <div class="admin-user-actions">
@@ -4572,6 +4607,7 @@
               ${canBlock ? `<button class="btn-red reject-user" type="button" data-uid="${escapeHtml(user.uid)}">Bloquear</button>` : ''}
               ${canMakeAdmin ? `<button class="btn-blue make-admin-user" type="button" data-uid="${escapeHtml(user.uid)}">Hacer admin</button>` : ''}
               ${canRemoveAdmin ? `<button class="btn-light remove-admin-user" type="button" data-uid="${escapeHtml(user.uid)}">Quitar admin</button>` : ''}
+              ${user.email ? `<button class="btn-light reset-password-user" type="button" data-email="${escapeHtml(user.email)}" data-name="${escapeHtml(user.name || user.email || 'usuario')}">Enviar recuperación</button>` : ''}
               ${canDelete ? `<button class="btn-red delete-user" type="button" data-uid="${escapeHtml(user.uid)}" data-name="${escapeHtml(user.name || user.email || 'usuario')}">Eliminar</button>` : ''}
             </div>
           </div>
@@ -4594,9 +4630,37 @@
         button.addEventListener('click', () => updateUserRole(button.dataset.uid, 'user'));
       });
 
+      pendingUsersList.querySelectorAll('.reset-password-user').forEach(button => {
+        button.addEventListener('click', () => sendAccessPasswordReset(button.dataset.email, button.dataset.name));
+      });
+
       pendingUsersList.querySelectorAll('.delete-user').forEach(button => {
         button.addEventListener('click', () => deleteSystemUser(button.dataset.uid, button.dataset.name));
       });
+    }
+
+
+    async function sendAccessPasswordReset(email, name = 'usuario') {
+      if (!currentUser || !isCurrentApprovedAdmin()) {
+        alert('No tienes permisos para enviar recuperación de contraseña.');
+        return;
+      }
+
+      if (!email) {
+        alert('Este usuario no tiene correo registrado.');
+        return;
+      }
+
+      const confirmSend = confirm(`Se enviará un correo de recuperación de contraseña a ${name} (${email}). ¿Deseas continuar?`);
+      if (!confirmSend) return;
+
+      try {
+        await sendPasswordResetEmail(auth, email);
+        alert('Correo de recuperación enviado correctamente.');
+      } catch (error) {
+        console.error('No se pudo enviar la recuperación de contraseña:', error);
+        alert('No se pudo enviar la recuperación. Revisa que el correo exista en Firebase Authentication y que el dominio esté autorizado.');
+      }
     }
 
     async function loadPendingUsers() {
@@ -4618,8 +4682,8 @@
             email: user.email || '',
             role: user.role || 'user',
             status: user.status || 'pending',
-            code: user.code || '',
-            codePassword: user.codePassword || '',
+            code: user.code || user.registrationData?.code || '',
+            codePassword: user.codePassword || user.registrationData?.codePassword || '',
             createdAt: user.createdAt || '',
             updatedAt: user.updatedAt || ''
           };
@@ -4891,13 +4955,17 @@ Esta acción no se puede deshacer.
       }
 
       const admin = isMainAdminEmail(credential.user.email);
+      const createdAt = new Date().toISOString();
       const profile = await ensureUserProfile(credential.user, {
-        name,
+        name: normalizeCredentialValue(name),
+        email: normalizeCredentialValue(email),
         code: normalizeCredentialValue(code),
         codePassword: normalizeCredentialValue(codePassword),
+        registeredFromForm: true,
+        registeredAt: createdAt,
         role: admin ? 'admin' : 'user',
         status: admin ? 'approved' : 'pending',
-        createdAt: new Date().toISOString()
+        createdAt
       });
 
       if (!profile) return;
