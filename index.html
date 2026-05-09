@@ -3283,7 +3283,7 @@
 
         <div class="pending-panel hidden" id="pendingPanel">
           <h4>Cuenta pendiente de aprobación</h4>
-          <p>Tu cuenta fue creada correctamente. Tu usuario ya fue creado en Firebase Authentication. El usuario principal debe aprobar tu acceso antes de que puedas entrar al sistema.</p>
+          <p>Tu cuenta fue creada correctamente. Tu usuario ya fue creado en Firebase Authentication. Un administrador aprobado debe autorizar tu acceso antes de que puedas entrar al sistema.</p>
           <button class="btn-red" type="button" id="btnLogoutPending">Salir</button>
         </div>
 
@@ -3571,7 +3571,7 @@
           <button class="btn-blue" id="btnRefreshUsers" type="button">Actualizar usuarios</button>
         </div>
         <div class="report-note" style="margin-bottom: 14px;">
-          Usuario principal configurado: <strong>mikel@local.io</strong>. Los administradores pueden ver usuarios, aprobarlos, bloquearlos y eliminar los datos guardados en Firestore. Solo el usuario principal puede crear o quitar administradores.
+          Usuario principal configurado: <strong>mikel@local.io</strong>. Este usuario queda como administrador autorizado por defecto. Todo usuario que tenga rol <strong>admin</strong> y estado <strong>aprobado</strong> puede ver usuarios, ver códigos, aprobar, bloquear, eliminar datos de Firestore y convertir a otros usuarios en administradores. El usuario principal no puede ser bloqueado, eliminado ni degradado.
         </div>
 
         <div class="admin-search-box">
@@ -4274,8 +4274,8 @@
 
       if (authUserChip) authUserChip.textContent = 'Pendiente';
       if (userInfoText) userInfoText.textContent = `Cuenta pendiente de aprobación: ${profile?.email || user.email}`;
-      updateCloudStatus('Tu cuenta está pendiente de aprobación por el usuario principal.', 'info');
-      updateAuthMessage('Tu cuenta está pendiente. Cuando el usuario principal la apruebe, podrás ingresar.', 'ok');
+      updateCloudStatus('Tu cuenta está pendiente de aprobación por un administrador.', 'info');
+      updateAuthMessage('Tu cuenta está pendiente. Cuando un administrador la apruebe, podrás ingresar.', 'ok');
     }
 
     function getReadableUserStatus(status = '') {
@@ -4527,14 +4527,20 @@
         const status = user.status || 'pending';
         const role = user.role || 'user';
         const isCurrentAdmin = user.uid === currentUser?.uid;
-        const mainAdmin = isCurrentMainAdmin();
+        const currentIsApprovedAdmin = isCurrentApprovedAdmin();
         const targetIsMainAdmin = isMainAdminEmail(user.email);
-        const canManageTarget = !isCurrentAdmin && !targetIsMainAdmin && (mainAdmin || role !== 'admin');
+
+        // Regla central:
+        // - El usuario principal definido en ADMIN_EMAILS siempre es admin aprobado.
+        // - Cualquier usuario con role='admin' y status='approved' tiene los mismos permisos operativos:
+        //   aprobar, bloquear, eliminar datos de Firestore y convertir a otros usuarios en admin.
+        // - Ningún admin puede bloquear/eliminar/degradar al usuario principal ni gestionarse a sí mismo.
+        const canManageTarget = currentIsApprovedAdmin && !isCurrentAdmin && !targetIsMainAdmin;
         const canApprove = status !== 'approved' && canManageTarget;
         const canBlock = status !== 'blocked' && canManageTarget;
         const canDelete = canManageTarget;
-        const canMakeAdmin = mainAdmin && role !== 'admin' && !isCurrentAdmin && !targetIsMainAdmin;
-        const canRemoveAdmin = mainAdmin && role === 'admin' && !isCurrentAdmin && !targetIsMainAdmin;
+        const canMakeAdmin = canManageTarget && role !== 'admin';
+        const canRemoveAdmin = canManageTarget && role === 'admin';
 
         return `
           <div class="admin-user-row">
@@ -4621,16 +4627,42 @@
       if (!currentUser) return;
       const adminProfile = await getUserProfile(currentUser);
       if (!adminProfile || adminProfile.role !== 'admin' || adminProfile.status !== 'approved') {
-        alert('No tienes permisos de administrador para aprobar usuarios.');
+        alert('No tienes permisos de administrador para aprobar o bloquear usuarios.');
         return;
       }
 
-      await updateDoc(getUserProfileRef(uid), {
+      const target = adminUsersCache.find(user => user.uid === uid) || codesUsersCache.find(user => user.uid === uid);
+      if (!target) {
+        alert('No se encontró el usuario seleccionado. Actualiza la lista e intenta de nuevo.');
+        return;
+      }
+
+      if (uid === currentUser.uid) {
+        alert('No puedes aprobar, bloquear o cambiar el estado de tu propio usuario desde esta acción.');
+        return;
+      }
+
+      if (isMainAdminEmail(target.email)) {
+        alert('El usuario principal del sistema no puede ser bloqueado ni modificado desde esta acción.');
+        return;
+      }
+
+      const updatePayload = {
         status,
-        approvedBy: currentUser.uid,
-        approvedAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
-      });
+      };
+
+      if (status === 'approved') {
+        updatePayload.approvedBy = currentUser.uid;
+        updatePayload.approvedAt = new Date().toISOString();
+      }
+
+      if (status === 'blocked') {
+        updatePayload.blockedBy = currentUser.uid;
+        updatePayload.blockedAt = new Date().toISOString();
+      }
+
+      await updateDoc(getUserProfileRef(uid), updatePayload);
 
       alert(status === 'approved'
         ? 'Usuario aprobado. Ahora podrá ingresar con su correo y contraseña.'
@@ -4638,6 +4670,7 @@
       );
 
       await loadPendingUsers();
+      await loadCodesUsers();
     }
 
     async function deleteSystemUser(uid, displayName = 'este usuario') {
@@ -4654,18 +4687,11 @@
         return;
       }
 
-      const mainAdmin = isCurrentMainAdmin();
       const targetIsMainAdmin = isMainAdminEmail(target.email);
       const isSelf = uid === currentUser.uid;
-      const targetIsAdmin = target.role === 'admin';
 
       if (isSelf || targetIsMainAdmin) {
         alert('No puedes eliminar tu propio usuario ni el usuario principal del sistema.');
-        return;
-      }
-
-      if (targetIsAdmin && !mainAdmin) {
-        alert('Solo el usuario principal puede eliminar otro administrador.');
         return;
       }
 
@@ -4706,8 +4732,25 @@ Esta acción no se puede deshacer.
 
     async function updateUserRole(uid, role) {
       if (!currentUser) return;
-      if (!isCurrentMainAdmin()) {
-        alert('Solo el usuario principal puede crear o quitar administradores.');
+      const adminProfile = await getUserProfile(currentUser);
+      if (!adminProfile || adminProfile.role !== 'admin' || adminProfile.status !== 'approved') {
+        alert('No tienes permisos de administrador para cambiar roles.');
+        return;
+      }
+
+      const target = adminUsersCache.find(user => user.uid === uid) || codesUsersCache.find(user => user.uid === uid);
+      if (!target) {
+        alert('No se encontró el usuario seleccionado. Actualiza la lista e intenta de nuevo.');
+        return;
+      }
+
+      if (uid === currentUser.uid) {
+        alert('No puedes cambiar tu propio rol desde esta acción.');
+        return;
+      }
+
+      if (isMainAdminEmail(target.email)) {
+        alert('El usuario principal del sistema siempre debe conservar el rol administrador.');
         return;
       }
 
@@ -4727,7 +4770,7 @@ Esta acción no se puede deshacer.
       await updateDoc(getUserProfileRef(uid), updatePayload);
 
       alert(role === 'admin'
-        ? 'Usuario convertido en administrador. Ahora podrá ver las secciones Usuarios y Códigos.'
+        ? 'Usuario convertido en administrador. Ahora podrá ver las secciones Usuarios y Códigos y tendrá permisos para aprobar, bloquear, eliminar y crear otros administradores.'
         : 'Rol de administrador retirado. El usuario seguirá como usuario normal.'
       );
 
@@ -4810,7 +4853,7 @@ Esta acción no se puede deshacer.
       }
 
       if (profile.status === 'pending') {
-        updateAuthMessage('Tu cuenta aún está pendiente de aprobación por el usuario principal.', 'error');
+        updateAuthMessage('Tu cuenta aún está pendiente de aprobación por un administrador.', 'error');
         return;
       }
 
@@ -4844,7 +4887,7 @@ Esta acción no se puede deshacer.
 
       updateAuthMessage(admin
         ? 'Cuenta principal creada correctamente. Cargando tu espacio...'
-        : 'Cuenta creada en Firebase Authentication. Queda pendiente hasta que el usuario principal apruebe el acceso.',
+        : 'Cuenta creada en Firebase Authentication. Queda pendiente hasta que un administrador apruebe el acceso.',
         'ok'
       );
 
