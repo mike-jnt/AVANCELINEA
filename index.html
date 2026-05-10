@@ -3170,6 +3170,362 @@
       .mini-actions button { width: 32px; }
       .modal-actions button { width: auto; }
     }
+
+
+    /* ==============================
+       Modo oscuro opcional
+       ============================== */
+    body.theme-dark {
+      --azul: #d8e9ff;
+      --azul2: #60a5fa;
+      --dorado: #d6ad5b;
+      --dorado2: #f3d99b;
+      --verde: #22c55e;
+      --verde-suave: rgba(34,197,94,.12);
+      --verde-borde: rgba(34,197,94,.34);
+      --gris: #0f172a;
+      --texto: #e5e7eb;
+      --rojo: #ef4444;
+      --borde: rgba(148,163,184,.18);
+      --sombra: 0 22px 55px rgba(0,0,0,.35);
+      background:
+        radial-gradient(circle at top left, rgba(96,165,250,.12), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(214,173,91,.10), transparent 30%),
+        linear-gradient(135deg, #020617 0%, #0f172a 52%, #111827 100%);
+      color: var(--texto);
+      color-scheme: dark;
+    }
+
+    body.theme-dark header {
+      background: linear-gradient(135deg, #020617 0%, #0f172a 60%, #111827 100%);
+      border-bottom-color: rgba(214,173,91,.85);
+      box-shadow: 0 18px 50px rgba(0,0,0,.32);
+    }
+
+    body.theme-dark .nav-link,
+    body.theme-dark .btn-outline,
+    body.theme-dark .auth-user-chip {
+      background: rgba(255,255,255,.07);
+      color: #e5e7eb;
+      border-color: rgba(255,255,255,.14);
+      box-shadow: none;
+    }
+
+    body.theme-dark .nav-link:hover,
+    body.theme-dark .btn-outline:hover {
+      background: rgba(255,255,255,.12);
+    }
+
+    body.theme-dark .nav-link.active,
+    body.theme-dark .theme-toggle-btn.theme-on {
+      background: linear-gradient(135deg, #f3d99b, #d6ad5b);
+      color: #111827;
+      border-color: transparent;
+    }
+
+    body.theme-dark .auth-gate {
+      background:
+        radial-gradient(circle at top left, rgba(96,165,250,.12), transparent 34%),
+        linear-gradient(135deg, #020617 0%, #0f172a 52%, #111827 100%) !important;
+    }
+
+    body.theme-dark .auth-card-pro,
+    body.theme-dark .auth-card,
+    body.theme-dark .modal,
+    body.theme-dark .home-hero,
+    body.theme-dark .home-card,
+    body.theme-dark .page-head,
+    body.theme-dark .stat,
+    body.theme-dark .panel,
+    body.theme-dark .tree-wrap,
+    body.theme-dark .config-section,
+    body.theme-dark .rank-section,
+    body.theme-dark .rank-watch-card,
+    body.theme-dark .advance-card,
+    body.theme-dark .codes-card,
+    body.theme-dark .admin-approval-section,
+    body.theme-dark .rank-inspector,
+    body.theme-dark .rank-card,
+    body.theme-dark .advanced-card,
+    body.theme-dark .rank-progress-card,
+    body.theme-dark .code-user-card,
+    body.theme-dark .selected-card,
+    body.theme-dark .summary-box,
+    body.theme-dark .report-box,
+    body.theme-dark .candidate-item {
+      background: linear-gradient(180deg, rgba(15,23,42,.96), rgba(17,24,39,.94)) !important;
+      border-color: rgba(148,163,184,.18) !important;
+      color: #e5e7eb !important;
+      box-shadow: var(--sombra) !important;
+    }
+
+    body.theme-dark .auth-brand-panel {
+      background:
+        radial-gradient(circle at top right, rgba(214,173,91,.18), transparent 34%),
+        linear-gradient(135deg, #020617 0%, #0f172a 54%, #111827 100%) !important;
+    }
+
+    body.theme-dark .auth-form-pro,
+    body.theme-dark .auth-form,
+    body.theme-dark .auth-message,
+    body.theme-dark .verify-panel,
+    body.theme-dark .pending-panel {
+      background: rgba(15,23,42,.96) !important;
+      border-color: rgba(148,163,184,.18) !important;
+      color: #e5e7eb !important;
+    }
+
+    body.theme-dark .home-hero {
+      background:
+        radial-gradient(circle at top right, rgba(214,173,91,.14), transparent 34%),
+        linear-gradient(135deg, rgba(15,23,42,.98), rgba(17,24,39,.96)) !important;
+    }
+
+    body.theme-dark h1,
+    body.theme-dark h2,
+    body.theme-dark h3,
+    body.theme-dark h4,
+    body.theme-dark h5,
+    body.theme-dark .home-hero h2,
+    body.theme-dark .page-head h2,
+    body.theme-dark .rank-head h2,
+    body.theme-dark .config-head h2,
+    body.theme-dark .panel h2,
+    body.theme-dark .tree-head h2,
+    body.theme-dark .candidate-name,
+    body.theme-dark .node .name,
+    body.theme-dark .advanced-row h5,
+    body.theme-dark #homeLeaderName,
+    body.theme-dark #summaryTitle,
+    body.theme-dark #advancedModalTitle,
+    body.theme-dark #inspectorPersonName {
+      color: #f8fafc !important;
+    }
+
+    body.theme-dark p,
+    body.theme-dark small,
+    body.theme-dark .subtitle,
+    body.theme-dark .page-head p,
+    body.theme-dark .home-hero p,
+    body.theme-dark .config-head p,
+    body.theme-dark .rank-head p,
+    body.theme-dark .advance-card p,
+    body.theme-dark .codes-head p,
+    body.theme-dark .field-help,
+    body.theme-dark .auth-form-head p,
+    body.theme-dark .auth-field small,
+    body.theme-dark .auth-switch,
+    body.theme-dark .note,
+    body.theme-dark .candidate-empty,
+    body.theme-dark .advanced-empty,
+    body.theme-dark .search-status.empty {
+      color: #94a3b8 !important;
+    }
+
+    body.theme-dark input,
+    body.theme-dark select,
+    body.theme-dark textarea,
+    body.theme-dark .auth-field input,
+    body.theme-dark .advanced-select-box select,
+    body.theme-dark .rank-watch-select select,
+    body.theme-dark .inspector-field select,
+    body.theme-dark .admin-search-box input,
+    body.theme-dark .codes-search-box input {
+      background: #020617 !important;
+      color: #f8fafc !important;
+      border-color: rgba(148,163,184,.26) !important;
+    }
+
+    body.theme-dark input::placeholder,
+    body.theme-dark textarea::placeholder {
+      color: #64748b !important;
+    }
+
+    body.theme-dark input:focus,
+    body.theme-dark select:focus,
+    body.theme-dark textarea:focus {
+      border-color: rgba(214,173,91,.75) !important;
+      box-shadow: 0 0 0 4px rgba(214,173,91,.14) !important;
+    }
+
+    body.theme-dark label,
+    body.theme-dark .auth-field label,
+    body.theme-dark .inspector-field label,
+    body.theme-dark .advanced-select-box label,
+    body.theme-dark .rank-watch-select label,
+    body.theme-dark .admin-search-box label,
+    body.theme-dark .codes-search-box label {
+      color: #cbd5e1 !important;
+    }
+
+    body.theme-dark .canvas {
+      background:
+        radial-gradient(circle at top left, rgba(96,165,250,.08), transparent 35%),
+        linear-gradient(180deg, #020617 0%, #0f172a 100%) !important;
+    }
+
+    body.theme-dark .zoom-toolbar,
+    body.theme-dark .level-filter-toolbar,
+    body.theme-dark .frontal-focus-panel,
+    body.theme-dark .rank-watch-select,
+    body.theme-dark .advanced-select-box,
+    body.theme-dark .admin-search-box,
+    body.theme-dark .codes-search-box,
+    body.theme-dark .code-field,
+    body.theme-dark .code-edit-user-box,
+    body.theme-dark .advanced-kpi,
+    body.theme-dark .advanced-row,
+    body.theme-dark .candidate-metric,
+    body.theme-dark .requirement-row,
+    body.theme-dark .summary-list li,
+    body.theme-dark .report-note,
+    body.theme-dark .admin-users-summary,
+    body.theme-dark .codes-summary,
+    body.theme-dark .rank-watch-summary,
+    body.theme-dark .candidate-note,
+    body.theme-dark .advanced-note,
+    body.theme-dark .inspector-note,
+    body.theme-dark .note {
+      background: rgba(2,6,23,.72) !important;
+      border-color: rgba(148,163,184,.16) !important;
+      color: #cbd5e1 !important;
+    }
+
+    body.theme-dark .node {
+      background: linear-gradient(180deg, #111827, #0f172a) !important;
+      border-color: rgba(148,163,184,.16) !important;
+      color: #e5e7eb !important;
+      box-shadow: 0 14px 32px rgba(0,0,0,.36) !important;
+    }
+
+    body.theme-dark .node.activated,
+    body.theme-dark .candidate-item.ready,
+    body.theme-dark .rank-card.ready,
+    body.theme-dark .rank-progress-card.ready,
+    body.theme-dark .report-box.ok,
+    body.theme-dark .requirement-row.ok,
+    body.theme-dark .advanced-row.ready {
+      background: linear-gradient(180deg, rgba(34,197,94,.14), rgba(15,23,42,.96)) !important;
+      border-color: rgba(34,197,94,.32) !important;
+    }
+
+    body.theme-dark .candidate-item.near,
+    body.theme-dark .advanced-row.near,
+    body.theme-dark .report-box.warn {
+      background: linear-gradient(180deg, rgba(249,131,1,.14), rgba(15,23,42,.96)) !important;
+      border-color: rgba(249,131,1,.28) !important;
+    }
+
+    body.theme-dark .candidate-item.projected {
+      background: linear-gradient(180deg, rgba(96,165,250,.14), rgba(15,23,42,.96)) !important;
+      border-color: rgba(96,165,250,.28) !important;
+    }
+
+    body.theme-dark .status,
+    body.theme-dark .pill,
+    body.theme-dark .rank-badge,
+    body.theme-dark .candidate-pill,
+    body.theme-dark .advanced-tag,
+    body.theme-dark .legend-item,
+    body.theme-dark .report-status,
+    body.theme-dark .admin-status-badge,
+    body.theme-dark .frontal-focus-status,
+    body.theme-dark .advance-count,
+    body.theme-dark .rank-progress-percent {
+      background: rgba(148,163,184,.12) !important;
+      color: #cbd5e1 !important;
+      border-color: rgba(148,163,184,.18) !important;
+    }
+
+    body.theme-dark .status.on,
+    body.theme-dark .candidate-pill.ready,
+    body.theme-dark .legend-item.ready,
+    body.theme-dark .report-status.ready,
+    body.theme-dark .admin-status-badge.approved,
+    body.theme-dark .check-ok {
+      background: rgba(34,197,94,.16) !important;
+      color: #86efac !important;
+      border-color: rgba(34,197,94,.28) !important;
+    }
+
+    body.theme-dark .legend-item.near,
+    body.theme-dark .candidate-pill.near,
+    body.theme-dark .report-status.pending,
+    body.theme-dark .admin-status-badge.pending,
+    body.theme-dark .check-no {
+      background: rgba(249,131,1,.14) !important;
+      color: #f8d08a !important;
+      border-color: rgba(249,131,1,.26) !important;
+    }
+
+    body.theme-dark .admin-status-badge.blocked {
+      background: rgba(239,68,68,.15) !important;
+      color: #fecaca !important;
+      border-color: rgba(239,68,68,.28) !important;
+    }
+
+    body.theme-dark button,
+    body.theme-dark .file-label,
+    body.theme-dark .btn-light,
+    body.theme-dark .btn-report,
+    body.theme-dark .frontal-focus-btn,
+    body.theme-dark .candidate-tab,
+    body.theme-dark .summary-action button {
+      background: rgba(15,23,42,.92);
+      color: #e5e7eb;
+      border: 1px solid rgba(148,163,184,.18);
+      box-shadow: none;
+    }
+
+    body.theme-dark .btn-blue,
+    body.theme-dark .auth-form-pro .btn-blue {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+      color: #ffffff !important;
+      border-color: transparent !important;
+    }
+
+    body.theme-dark .btn-gold,
+    body.theme-dark .auth-form-pro .btn-gold {
+      background: linear-gradient(135deg, #f3d99b, #d6ad5b) !important;
+      color: #111827 !important;
+      border-color: transparent !important;
+    }
+
+    body.theme-dark .btn-green {
+      background: linear-gradient(135deg, #22c55e, #15803d) !important;
+      color: #ffffff !important;
+      border-color: transparent !important;
+    }
+
+    body.theme-dark .btn-red {
+      background: linear-gradient(135deg, #ef4444, #b91c1c) !important;
+      color: #ffffff !important;
+      border-color: transparent !important;
+    }
+
+    body.theme-dark .modal-backdrop {
+      background: rgba(0,0,0,.76);
+    }
+
+    body.theme-dark .progress-track {
+      background: rgba(148,163,184,.20);
+    }
+
+    body.theme-dark .tree li::before,
+    body.theme-dark .tree li::after,
+    body.theme-dark .tree ul ul::before,
+    body.theme-dark .tree li:last-child::before {
+      border-color: rgba(214,173,91,.64) !important;
+    }
+
+    body.theme-dark .theme-toggle-inline {
+      width: 100%;
+      margin-top: 12px;
+      background: rgba(214,173,91,.10) !important;
+      color: #f3d99b !important;
+      border: 1px solid rgba(214,173,91,.28) !important;
+    }
+
   </style>
 </head>
 <body>
@@ -3186,6 +3542,7 @@
         <button class="nav-link hidden" type="button" data-target="codigos" id="btnCodesNav">Códigos</button>
         <button class="nav-link hidden" type="button" data-target="usuarios" id="btnUsersNav">Usuarios</button>
         <button class="nav-link" type="button" data-target="configuracion">Configuración</button>
+        <button class="nav-link theme-toggle-btn" type="button" id="themeToggleNav" aria-label="Cambiar modo de color">🌙 Oscuro</button>
         <button class="nav-link auth-user-chip" type="button" id="authUserChip">Sin sesión</button>
         <button class="nav-link" type="button" id="btnLogout">Salir</button>
       </nav>
@@ -3281,6 +3638,7 @@
         </form>
 
         <div class="auth-message" id="authMessage">Ingresa con tu cuenta o crea una nueva desde el formulario de registro.</div>
+        <button class="btn-light theme-toggle-inline" type="button" id="themeToggleAuth">🌙 Activar modo oscuro</button>
 
         <div class="pending-panel hidden" id="pendingPanel">
           <h4>Cuenta pendiente de aprobación</h4>
@@ -3868,6 +4226,8 @@
     const USER_NETWORK_DOC_ID = 'red_principal';
     const ADMIN_EMAILS = ['mikel@local.io']; // Usuario principal/admin del sistema.
     const CLOUD_DEBOUNCE_MS = 1200;
+    const THEME_STORAGE_KEY = 'constructor_red_4life_theme';
+    applyTheme(getPreferredTheme(), false);
     let cloudSaveTimer = null;
     let isLoadingFromCloud = false;
     let lastCloudSaveAt = null;
@@ -4011,6 +4371,43 @@
       authMessage.textContent = message;
       authMessage.classList.toggle('error', type === 'error');
       authMessage.classList.toggle('ok', type === 'ok');
+    }
+
+    function getPreferredTheme() {
+      const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+      if (storedTheme === 'dark' || storedTheme === 'light') return storedTheme;
+      return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    function updateThemeButtons(theme) {
+      const isDark = theme === 'dark';
+      const label = isDark ? '☀️ Claro' : '🌙 Oscuro';
+      const fullLabel = isDark ? '☀️ Activar modo claro' : '🌙 Activar modo oscuro';
+
+      document.querySelectorAll('#themeToggleNav').forEach(button => {
+        button.textContent = label;
+        button.classList.toggle('theme-on', isDark);
+        button.setAttribute('aria-label', isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
+      });
+
+      document.querySelectorAll('#themeToggleAuth').forEach(button => {
+        button.textContent = fullLabel;
+        button.classList.toggle('theme-on', isDark);
+        button.setAttribute('aria-label', isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
+      });
+    }
+
+    function applyTheme(theme = 'light', persist = true) {
+      const normalizedTheme = theme === 'dark' ? 'dark' : 'light';
+      document.body.classList.toggle('theme-dark', normalizedTheme === 'dark');
+      document.documentElement.dataset.theme = normalizedTheme;
+      if (persist) localStorage.setItem(THEME_STORAGE_KEY, normalizedTheme);
+      updateThemeButtons(normalizedTheme);
+    }
+
+    function toggleTheme() {
+      const currentTheme = document.body.classList.contains('theme-dark') ? 'dark' : 'light';
+      applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
     }
 
     function getCloudDocRef() {
@@ -7089,6 +7486,9 @@ Esta acción no se puede deshacer.
 
     document.getElementById('btnShowRegister')?.addEventListener('click', () => showAuthPanel('register'));
     document.getElementById('btnShowLogin')?.addEventListener('click', () => showAuthPanel('login'));
+    document.getElementById('themeToggleNav')?.addEventListener('click', toggleTheme);
+    document.getElementById('themeToggleAuth')?.addEventListener('click', toggleTheme);
+    updateThemeButtons(document.body.classList.contains('theme-dark') ? 'dark' : 'light');
 
     document.getElementById('btnLogout')?.addEventListener('click', handleLogout);
     document.getElementById('btnLogoutConfig')?.addEventListener('click', handleLogout);
